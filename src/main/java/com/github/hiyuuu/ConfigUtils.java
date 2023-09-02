@@ -55,9 +55,6 @@ public class ConfigUtils extends YamlConfiguration {
         // デフォルトコンフィグの配置
         saveDefaultConfig();
 
-        // デフォルトセクションの設定
-        saveDefaultSection();
-
         // 存在しない場合、ファイルを初期化
         if (!configFile.exists()) {
             configFile.getParentFile().mkdirs();
@@ -71,6 +68,9 @@ public class ConfigUtils extends YamlConfiguration {
             System.out.println(filePath + " ファイルのロードに失敗しました。原因: " + e.toString());
             return;
         }
+
+        // デフォルトセクションの設定
+        saveDefaultSection();
 
         // ロード完了フラグ
         isLoaded = true;
@@ -154,7 +154,7 @@ public class ConfigUtils extends YamlConfiguration {
             List<String> inlineComments = yamlConf.getInlineComments(k);
             Object obj = yamlConf.get(k);
 
-            System.out.println(k + " -> " + this.isSet(k));
+            System.out.println(k + " -> " + "section?: " + isConfigurationSection(k) + "  isSet?: " + this.isSet(k));
 
             // resources ファイルとの差分を抽出
             if (!isConfigurationSection(k) && !isSet(k)) {
@@ -163,7 +163,6 @@ public class ConfigUtils extends YamlConfiguration {
                 this.setComments(k, comments);
                 this.setInlineComments(k, inlineComments);
             }
-
         });
 
         // 保存
