@@ -136,9 +136,8 @@ public class ConfigUtils extends YamlConfiguration {
     /**
      * 設定されていないセクションを新たに追加
      * @throws IOException
-     * @throws InvalidConfigurationException
      */
-    public void saveDefaultSection() throws IOException, InvalidConfigurationException {
+    public void saveDefaultSection() throws IOException {
 
         // resourcesのファイル読み取り
         InputStream is = plugin.getResource(configFile.getName());
