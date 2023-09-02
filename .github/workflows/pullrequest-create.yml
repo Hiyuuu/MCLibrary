@@ -13,6 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: PRを作成
-        run: gh pr create -B "master" -t "ブランチマージ" -b ""
+        run: gh pr create -B "master" -t "ブランチマージ： develop → master" -b ""
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
