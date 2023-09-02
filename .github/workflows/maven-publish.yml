@@ -48,7 +48,7 @@ jobs:
           mkdir -p ./maven/$GROUP/$NAME/
           cd ./maven/$GROUP/$NAME/
           ls -ls
-          if [[ -d "./maven/$GROUP/$NAME/$VERSION/" ]]; then
+          if [ -d "./maven/$GROUP/$NAME/$VERSION/" ]; then
             echo "バージョンが既存するため処理を終了しました"
             exit 1
           else
