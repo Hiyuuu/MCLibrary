@@ -1,4 +1,4 @@
-package com.gmail.streamchecker.util
+package com.github.hiyuuu
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
@@ -16,7 +16,6 @@ import java.util.*
 
 /**
  * UUIDやプレイヤー名を相互に変換できるクラス
- * @author hiyuuu
  */
 object AccountUtils {
 
