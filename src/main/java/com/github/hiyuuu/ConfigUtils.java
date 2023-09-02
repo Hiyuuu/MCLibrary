@@ -154,10 +154,10 @@ public class ConfigUtils extends YamlConfiguration {
             List<String> inlineComments = yamlConf.getInlineComments(k);
             Object obj = yamlConf.get(k);
 
-            Bukkit.broadcastMessage(k + " -> " + this.isSet(k));
+            System.out.println(k + " -> " + this.isSet(k));
 
             // resources ファイルとの差分を抽出
-            if (!this.isSet(k)) {
+            if (!isConfigurationSection(k) && !isSet(k)) {
 
                 this.set(k, obj);
                 this.setComments(k, comments);
