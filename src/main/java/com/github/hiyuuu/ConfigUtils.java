@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
 
@@ -144,7 +145,7 @@ public class ConfigUtils extends YamlConfiguration {
         if (is == null) return;
 
         // YamlConfiguration を生成
-        InputStreamReader isr = new InputStreamReader(is);
+        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
         YamlConfiguration yamlConf = YamlConfiguration.loadConfiguration(isr);
         Set<String> keys = yamlConf.getKeys(true);
 
