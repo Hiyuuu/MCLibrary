@@ -25,12 +25,6 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - id: set_variable
-        name: build.gradle の変数取得
-        run: |
-            echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
       - name: キャッシュ を準備中
         uses: actions/cache@v2
         with:
@@ -40,6 +34,12 @@ jobs:
           key: maven-repository-${{ github.sha }}
           restore-keys: |
             maven-repository-
+      - id: set_variable
+        name: build.gradle の変数取得
+        run: |
+            echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
+            echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
+            echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
       - name: ディレクトリチェック
         continue-on-error: true
         id: folder_check
