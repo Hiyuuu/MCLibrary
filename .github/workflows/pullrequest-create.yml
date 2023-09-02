@@ -1,0 +1,15 @@
+name: プルリクエストを生成
+
+on:
+  push:
+    branches: [ develop ]
+
+jobs:
+  create-release-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: PRを作成
+        run: gh pr create -B "master" -t "ブランチマージ" -b ""
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
