@@ -31,10 +31,11 @@ jobs:
             echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
             echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
             echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
-      - name: Mavenキャッシュ を準備中
+      - name: キャッシュ を準備中
         uses: actions/cache@v2
         with:
           path: |
+            ~/.gradle
             ./maven
           key: maven-repository-${{ github.sha }}
           restore-keys: |
