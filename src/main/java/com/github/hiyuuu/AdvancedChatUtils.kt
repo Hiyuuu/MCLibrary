@@ -17,7 +17,6 @@ import kotlin.random.Random
 
 /**
  * TELLRAWを表現するクラスです
- * @author hiyu
  * @version 3.1
  * @changelog
  *   v1.0 - クラスを作成
