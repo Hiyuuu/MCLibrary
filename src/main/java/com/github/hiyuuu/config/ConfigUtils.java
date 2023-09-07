@@ -158,8 +158,6 @@ public class ConfigUtils extends YamlConfiguration {
             List<String> inlineComments = yamlConf.getInlineComments(k);
             Object obj = yamlConf.get(k);
 
-            System.out.println(k + " -> " + "section?: " + isConfigurationSection(k) + "  isSet?: " + this.isSet(k));
-
             // resources ファイルとの差分を抽出
             if (!isConfigurationSection(k) && !isSet(k)) {
 
