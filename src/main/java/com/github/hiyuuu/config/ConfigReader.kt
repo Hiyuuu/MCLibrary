@@ -268,6 +268,9 @@ class ConfigReader {
 
             // 書き込み
             yamlFile.writeText(lines.joinToString("\n").trimEnd('\n'))
+
+            // リセット
+            conf.resetFileModifiedHistory()
         }
     }
 
