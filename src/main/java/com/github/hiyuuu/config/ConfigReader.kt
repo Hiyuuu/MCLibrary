@@ -182,7 +182,7 @@ class ConfigReader {
 
                     val getObj = conf.get(section)
                     println(getObj.toString() + " vs " + obj)
-                    if (getObj != null && getObj == obj) {
+                    if (getObj != null && getObj != obj) {
                         conf.set(section, obj)
                         isEdit = true
                     }
