@@ -68,20 +68,20 @@ class ConfigReader {
                         val subClassInlineCommentAnno = runCatching { f.getAnnotation(InlineComment::class.java) }.getOrNull()
                         val subClassSpaceAnno = runCatching { f.getAnnotation(Space::class.java) }.getOrNull()
 
-                        // セクション生成
-                        if (!conf.isConfigurationSection(classSection))
-                            conf.createSection(classSection)
-
-                        // コンフィグ - サブクラスコメントアウト
-                        val subClassSpaceSize = subClassSpaceAnno?.size ?: configSpaceAnno?.classSpaceSize ?: 1
-                        val spaceList = (1..subClassSpaceSize).map { "#SPACE#" }.toTypedArray()
-                        conf.setComments(classSection, listOf(*spaceList, *subClassCommentAnno?.message ?: arrayOf()))
-                        conf.setInlineComments(classSection, subClassInlineCommentAnno?.message?.toList() ?: listOf())
-
                         val sectionName = runCatching { f.getAnnotation(SectionName::class.java) }.getOrNull()
                         if (sectionName != null && sectionName.name.isNotBlank()) {
                             section = section.replace("(.*(?:^|\\.))(.*?)\$".toRegex(), "$1${sectionName.name}")
                         }
+
+                        // セクション生成
+                        if (!conf.isConfigurationSection(section))
+                            conf.createSection(section)
+
+                        // コンフィグ - サブクラスコメントアウト
+                        val subClassSpaceSize = subClassSpaceAnno?.size ?: configSpaceAnno?.classSpaceSize ?: 1
+                        val spaceList = (1..subClassSpaceSize).map { "#SPACE#" }.toTypedArray()
+                        conf.setComments(section, listOf(*spaceList, *subClassCommentAnno?.message ?: arrayOf()))
+                        conf.setInlineComments(section, subClassInlineCommentAnno?.message?.toList() ?: listOf())
 
                         val keyInstanceClass = KeyInstanceClass(section, obj, f.type)
                         classes.add(keyInstanceClass)
