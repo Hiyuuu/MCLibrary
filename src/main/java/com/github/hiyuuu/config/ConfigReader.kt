@@ -185,13 +185,60 @@ class ConfigReader {
                         conf.set(section, obj)
                         isEdit = true
                     }
-
                 }
             }
 
             // 保存
             if (isEdit) conf.saveConfig()
             return anyClass
+        }
+
+        @JvmStatic
+        fun <T> isDiff(conf: ConfigUtils, anyClass: T) : Boolean? {
+
+            // スーパークラスの情報を取得
+            val anyClazz = (anyClass ?: return null)::class.java
+            val classes  = arrayListOf(KeyInstanceClass("", anyClass, anyClazz))
+
+            // スーパークラスのアノテーションを取得
+            val configParserAnno = runCatching { anyClazz.getDeclaredAnnotation(ConfigParser::class.java) }.getOrNull() ?: return null
+
+            var isEdit = false
+            while (classes.size > 0) {
+
+                // クラスの情報復元
+                val lastKeyClass = classes.removeLastOrNull() ?: break
+                val classSection = lastKeyClass.section
+                val classInstance = lastKeyClass.instance
+                val clazz = lastKeyClass.clazz
+
+                clazz.declaredFields.forEach { f ->
+
+                    // フィールドの情報取得
+                    f.isAccessible = true
+                    val fieldName = f.name
+                    var section = "${classSection}${if (classSection.isNotBlank()) "." else ""}$fieldName"
+                    val obj = f.get(classInstance)
+
+                    // クラスを取得
+                    if (f.type.isAnnotationPresent(ConfigParser::class.java)) {
+
+                        val sectionName = runCatching { f.getAnnotation(SectionName::class.java) }.getOrNull()
+                        if (sectionName != null && sectionName.name.isNotBlank()) {
+                            section = section.replace("(.*(?:^|\\.))(.*?)\$".toRegex(), "$1${sectionName.name}")
+                        }
+
+                        val keyInstanceClass = KeyInstanceClass(section, obj, f.type)
+                        classes.add(keyInstanceClass)
+                        return@forEach
+                    }
+
+                    val getObj = conf.get(section)
+                    if (getObj != null && getObj != obj) { isEdit = true }
+                }
+            }
+
+            return isEdit
         }
 
         @JvmStatic
