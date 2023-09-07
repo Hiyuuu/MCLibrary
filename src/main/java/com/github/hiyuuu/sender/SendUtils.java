@@ -1,6 +1,5 @@
 package com.github.hiyuuu.sender;
 
-import com.github.hiyuuu.config.ConfigUtils;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -10,14 +9,14 @@ import java.util.function.Function;
 public class SendUtils {
     
     private String prefix = "";
-    private ConfigUtils configUtils;
+    private ConfigUtils2 configUtils;
 
     /**
      * 本クラスを使用する前に一度呼び出してください
      * @param prefix
      * @param messageConfig
      */
-    public SendUtils(String prefix, ConfigUtils messageConfig) {
+    public SendUtils(String prefix, ConfigUtils2 messageConfig) {
             this.prefix = prefix;
             this.configUtils = messageConfig;
     }

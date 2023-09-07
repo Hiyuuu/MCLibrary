@@ -1,21 +1,21 @@
-package com.github.hiyuuu.event;
+package com.github.hiyuuu.config.events;
 
 import com.github.hiyuuu.config.ConfigUtils;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * コンフィグをリロードした際に発生するイベント
+ * コンフィグを保存した際に発生するイベント
  */
-public final class ConfigReloadEvent extends Event {
+public class ConfigSaveEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
     public ConfigUtils config;
 
-    public ConfigReloadEvent(ConfigUtils configUtils) { this.config = configUtils; }
+    public ConfigSaveEvent(ConfigUtils configUtils) { this.config = configUtils; }
 
     public static HandlerList getHandlerList() { return handlers; }
 
     @Override
-    public HandlerList getHandlers() { return handlers;}
+    public HandlerList getHandlers() { return handlers; }
 }
