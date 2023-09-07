@@ -1,6 +1,6 @@
 package com.github.hiyuuu.event;
 
-import com.github.hiyuuu.ConfigUtils;
+import com.github.hiyuuu.config.ConfigUtils;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
