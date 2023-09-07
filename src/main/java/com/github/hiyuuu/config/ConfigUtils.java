@@ -1,20 +1,18 @@
 package com.github.hiyuuu.config;
 
-import com.github.hiyuuu.event.ConfigReloadEvent;
-import com.github.hiyuuu.event.ConfigSaveDefaultEvent;
-import com.github.hiyuuu.event.ConfigSaveEvent;
-import com.github.hiyuuu.event.ConfigSetEvent;
+import com.github.hiyuuu.config.events.ConfigReloadEvent;
+import com.github.hiyuuu.config.events.ConfigSaveDefaultEvent;
+import com.github.hiyuuu.config.events.ConfigSaveEvent;
+import com.github.hiyuuu.config.events.ConfigSetEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import javax.annotation.Nullable;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +23,7 @@ import java.util.Set;
 public class ConfigUtils extends YamlConfiguration {
 
     private final Plugin plugin;
-    private final File configFile;
+    private File configFile;
     private final boolean isAutoReload;
     private long fileModifiedHistory;
     public boolean isLoaded = false;
@@ -97,6 +95,12 @@ public class ConfigUtils extends YamlConfiguration {
 
         }.runTaskTimerAsynchronously(plugin, 0L, 20L);
     }
+
+    /**
+     * ファイルを取得
+     * @return File
+     */
+    public File getFile() { return this.configFile; }
 
     @Override
     public void set(String path, @Nullable Object value) {
@@ -200,6 +204,50 @@ public class ConfigUtils extends YamlConfiguration {
     public void save(String file) throws IOException {
         super.save(file);
         fileModifiedHistory = configFile.lastModified();
+    }
+
+    /**
+     * ファイルロードメソッドの実装
+     * @param file File to load from.
+     * @throws IOException
+     * @throws InvalidConfigurationException
+     */
+    @Override
+    public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
+
+        // コンフィグファイルを設定
+        fileModifiedHistory = file.lastModified();
+        this.configFile = file;
+
+        // コンフィグをロード
+        try {
+            super.load(configFile);
+        } catch (Exception e) {
+            System.out.println(file.getName() + " ファイルのロードに失敗しました。原因: " + e);
+        }
+    }
+
+    /**
+     * ファイルロードメソッドの実装
+     * @param filePath File to load from.
+     * @throws IOException
+     * @throws InvalidConfigurationException
+     */
+    @Override
+    public void load(@NotNull String filePath) throws IOException, InvalidConfigurationException {
+
+        // ファイルパスを生成
+        String path = plugin
+                .getDataFolder()
+                .getAbsolutePath()
+                + File.separator
+                + filePath.replaceAll("\\|/", File.separator);
+
+        // ファイルを変数へ代入
+        File file = new File(path);
+
+        // 読み込み
+        this.load(file);
     }
 
 }
