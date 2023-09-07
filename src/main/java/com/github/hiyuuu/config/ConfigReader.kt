@@ -21,12 +21,12 @@ class ConfigReader {
             val configSpaceAnno = runCatching { anyClazz.getAnnotation(ConfigSpace::class.java) }.getOrNull()
 
             // ヘッダー
-            val headerSpaceSize = headerCommentAnno?.spaceSize ?: configSpaceAnno?.classSpaceSize ?: Space().size.plus(1)
+            val headerSpaceSize = headerCommentAnno?.spaceSize ?: configSpaceAnno?.classSpaceSize ?: 2
             val headerSpaceList = (1..headerSpaceSize).map { "#SPACE#" }.toTypedArray()
             headerCommentAnno?.run { conf.options().setHeader(listOf(*headerSpaceList, *this.message)) }
 
             // フッター
-            val footerSpaceSize = footerCommentAnno?.spaceSize ?: configSpaceAnno?.classSpaceSize ?: Space().size.plus(1)
+            val footerSpaceSize = footerCommentAnno?.spaceSize ?: configSpaceAnno?.classSpaceSize ?: 1
             val footerSpaceList = (1..footerSpaceSize).map { "#SPACE#" }.toTypedArray()
             footerCommentAnno?.run { conf.options().setFooter(listOf(*footerSpaceList, *this.message)) }
 
@@ -113,13 +113,13 @@ class ConfigReader {
                         conf.set(section, obj)
 
                         // コンフィグ - フィールドコメントアウト
-                        val fieldSpaceSize = spaceAnno?.size ?: configSpaceAnno?.fieldSpaceSize ?: Space().size
+                        val fieldSpaceSize = spaceAnno?.size ?: configSpaceAnno?.fieldSpaceSize ?: 1
                         val spaceList = (1..fieldSpaceSize).map { "#SPACE#" }.toTypedArray()
                         conf.setComments(section, listOf(*spaceList, *commentAnno?.message ?: arrayOf()))
                         conf.setInlineComments(section, inlineCommentAnno?.message?.toList() ?: listOf())
 
                         // コンフィグ - セクションコメントアウト
-                        val classSpaceSize = classSpaceAnno?.size ?: configSpaceAnno?.classSpaceSize ?: Space().size.plus(1)
+                        val classSpaceSize = classSpaceAnno?.size ?: configSpaceAnno?.classSpaceSize ?: 2
                         val classSpaceList = (1..classSpaceSize).map { "#SPACE#" }.toTypedArray()
                         conf.setComments(classSection, listOf(*classSpaceList, *classCommentAnno?.message ?: arrayOf()))
                         conf.setInlineComments(classSection, classInlineCommentAnno?.message?.toList() ?: listOf())
@@ -150,6 +150,7 @@ class ConfigReader {
             // スーパークラスのアノテーションを取得
             val configParserAnno = runCatching { anyClazz.getDeclaredAnnotation(ConfigParser::class.java) }.getOrNull() ?: return null
 
+            var isEdit = false
             while (classes.size > 0) {
 
                 // クラスの情報復元
@@ -180,15 +181,17 @@ class ConfigReader {
                     }
 
                     val getObj = conf.get(section)
-                    if (getObj != null && getObj.equals(obj)) {
+                    println(getObj.toString() + " vs " + obj)
+                    if (getObj != null && getObj == obj) {
                         conf.set(section, obj)
+                        isEdit = true
                     }
 
                 }
             }
 
             // 保存
-            conf.saveConfig()
+            if (isEdit) conf.saveConfig()
             return anyClass
         }
 
