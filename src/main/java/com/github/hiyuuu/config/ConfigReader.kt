@@ -8,7 +8,7 @@ class ConfigReader {
     companion object {
 
         @JvmStatic
-        fun <T> parseClass(conf: ConfigUtils, anyClass: T) : T? {
+        fun <T> configToClass(conf: ConfigUtils, anyClass: T) : T? {
 
             // スーパークラスの情報を取得
             val anyClazz = (anyClass ?: return null)::class.java
@@ -141,7 +141,7 @@ class ConfigReader {
         }
 
         @JvmStatic
-        fun <T> syncConfig(conf: ConfigUtils, anyClass: T) : T? {
+        fun <T> classToConfig(conf: ConfigUtils, anyClass: T) : T? {
 
             // スーパークラスの情報を取得
             val anyClazz = (anyClass ?: return null)::class.java
@@ -179,7 +179,11 @@ class ConfigReader {
                         return@forEach
                     }
 
-                    conf.set(section, obj)
+                    val getObj = conf.get(section)
+                    if (getObj != null && getObj.equals(obj)) {
+                        conf.set(section, obj)
+                    }
+
                 }
             }
 
