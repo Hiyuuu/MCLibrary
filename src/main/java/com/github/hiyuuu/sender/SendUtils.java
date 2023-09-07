@@ -1,4 +1,4 @@
-package com.github.hiyuuu;
+package com.github.hiyuuu.sender;
 
 import com.github.hiyuuu.config.ConfigUtils;
 import org.bukkit.Sound;
