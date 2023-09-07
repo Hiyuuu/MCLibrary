@@ -130,7 +130,7 @@ public class ConfigUtils extends YamlConfiguration {
         if (configFile.exists()) return;
         try {
             plugin.saveResource(configFile.getName(), false);
-            fileModifiedHistory = configFile.lastModified();
+            resetFileModifiedHistory();
             Bukkit.getScheduler().runTask(plugin, () -> {
                 Bukkit.getPluginManager().callEvent(new ConfigSaveDefaultEvent(this));
             });
@@ -179,7 +179,7 @@ public class ConfigUtils extends YamlConfiguration {
      */
     public void reloadConfig() throws IOException, InvalidConfigurationException {
         this.load(configFile);
-        fileModifiedHistory = configFile.lastModified();
+        resetFileModifiedHistory();
     }
 
     /**
@@ -190,7 +190,7 @@ public class ConfigUtils extends YamlConfiguration {
     @Override
     public void save(File file) throws IOException {
         super.save(file);
-        fileModifiedHistory = configFile.lastModified();
+        resetFileModifiedHistory();
     }
 
     /**
@@ -201,7 +201,7 @@ public class ConfigUtils extends YamlConfiguration {
     @Override
     public void save(String file) throws IOException {
         super.save(file);
-        fileModifiedHistory = configFile.lastModified();
+        resetFileModifiedHistory();
     }
 
     /**
@@ -214,7 +214,7 @@ public class ConfigUtils extends YamlConfiguration {
     public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
 
         // コンフィグファイルを設定
-        fileModifiedHistory = file.lastModified();
+        resetFileModifiedHistory();
         this.configFile = file;
 
         // コンフィグをロード
@@ -246,6 +246,13 @@ public class ConfigUtils extends YamlConfiguration {
 
         // 読み込み
         this.load(file);
+    }
+
+    /**
+     * ファイル更新履歴をリセット
+     */
+    public void resetFileModifiedHistory() {
+        fileModifiedHistory = configFile.lastModified();
     }
 
 }
