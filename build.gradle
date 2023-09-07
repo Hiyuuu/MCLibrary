@@ -35,6 +35,7 @@ dependencies {
     // 同梱
     implementation fileTree(dir: './library/implement', include: ['*.jar'])
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+    implementation 'org.apache.commons:commons-lang3:3.13.0'
 
     // 参照
     compileOnly fileTree(dir: './library/compile', include: ['*.jar'])

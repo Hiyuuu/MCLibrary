@@ -1,4 +1,4 @@
-package com.github.hiyuuu;
+package com.github.hiyuuu.config;
 
 import com.github.hiyuuu.event.ConfigReloadEvent;
 import com.github.hiyuuu.event.ConfigSaveDefaultEvent;

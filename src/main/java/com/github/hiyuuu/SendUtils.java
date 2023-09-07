@@ -1,5 +1,6 @@
 package com.github.hiyuuu;
 
+import com.github.hiyuuu.config.ConfigUtils;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
