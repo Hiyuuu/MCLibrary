@@ -83,8 +83,6 @@ class ConfigReader {
                         conf.setComments(section, listOf(*spaceList, *subClassCommentAnno?.message ?: arrayOf()))
                         conf.setInlineComments(section, subClassInlineCommentAnno?.message?.toList() ?: listOf())
 
-                        println(section)
-
                         val keyInstanceClass = KeyInstanceClass(section, obj, f.type)
                         classes.add(keyInstanceClass)
                         return@forEach
