@@ -1,11 +1,41 @@
 package com.github.hiyuuu.configutils
 
+import com.github.hiyuuu.ThreadUtils
 import com.github.hiyuuu.config.ConfigUtils
 import com.github.hiyuuu.config.annotations.*
+import org.bukkit.plugin.Plugin
 
 class ConfigReader {
 
     companion object {
+
+        private val checkClasses = HashMap<ConfigUtils, Any>()
+
+        init {
+            ThreadUtils.AsyncTimer(20) { T ->
+
+                checkClasses.forEach {
+                    val config = it.key
+                    val clazz = it.value
+
+                    runCatching {
+
+                        classToConfig(config, clazz)
+                    }.exceptionOrNull()?.printStackTrace()
+                }
+            }
+        }
+
+        @JvmStatic
+        fun <T : Any> registerConfig(plugin: Plugin, filePath: String, anyClass: T) : T?
+            = registerConfigUtils(ConfigUtils(plugin, filePath, true), anyClass)
+
+        @JvmStatic
+        fun <T : Any> registerConfigUtils(conf: ConfigUtils, anyClass: T) : T? {
+            val result = configToClass(conf, anyClass) ?: return null
+            checkClasses[conf] = result
+            return result
+        }
 
         @JvmStatic
         fun <T> configToClass(conf: ConfigUtils, anyClass: T) : T? {
@@ -217,7 +247,6 @@ class ConfigReader {
             // スーパークラスのアノテーションを取得
             val configParserAnno = runCatching { anyClazz.getDeclaredAnnotation(ConfigParser::class.java) }.getOrNull() ?: return null
 
-            var isEdit = false
             while (classes.size > 0) {
 
                 // クラスの情報復元
@@ -248,11 +277,11 @@ class ConfigReader {
                     }
 
                     val getObj = conf.get(section)
-                    if (getObj != null && getObj != obj) { isEdit = true }
+                    if (getObj != null && getObj != obj) { return true }
                 }
             }
 
-            return isEdit
+            return false
         }
 
         @JvmStatic
