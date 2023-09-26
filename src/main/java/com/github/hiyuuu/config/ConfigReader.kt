@@ -145,7 +145,7 @@ class ConfigReader {
 
                         // 情報取得してクラスに代入
                         val getObj = conf.get(section)
-                        f.set(classInstance, getObj)
+                        getObj?.let { f.set(classInstance, getObj) }
 
                     } else if (!conf.isSet(section) && !conf.isConfigurationSection(section)) {
 
