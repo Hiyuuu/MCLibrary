@@ -67,6 +67,8 @@ jobs:
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
+          git config --global user.email "Hiyuuu@github.com"
+          git config --global user.name "Hiyuuu"
           git branch maven
           git add ./maven/
           git commit -m "added to maven repository"
