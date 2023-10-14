@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: チェックアウト
+      - name: チェックアウト - Master
         uses: actions/checkout@v3
       - name: Javaを準備中
         uses: actions/setup-java@v1
@@ -30,7 +30,6 @@ jobs:
         with:
           path: |
             ~/.gradle
-            ./maven
           key: maven-repository-${{ github.sha }}
           restore-keys: |
             maven-repository-
@@ -62,6 +61,15 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Mavenブランチにプッシュ
+        shell: bash
+        run: |
+          git add ./maven/
+          git push maven master
+      - name: チェックアウト - Maven
+        uses: actions/checkout@v3
+        with:
+          repository: 'maven'
       - name: ページをセットアップ中
         uses: actions/configure-pages@v3
       - name: ページをビルド中 (Jekyll)
