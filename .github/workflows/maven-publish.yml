@@ -72,12 +72,14 @@ jobs:
           git switch --orphan maven
           git commit --allow-empty -m "initial maven branch"
           git push -u origin maven
+      - name: チェックアウト - Master
+        uses: actions/checkout@v3
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
           git add ./maven/
           git commit -m "added to maven repository"
-          git push maven master
+          git push maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
         with:
