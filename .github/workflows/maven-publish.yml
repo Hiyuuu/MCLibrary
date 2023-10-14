@@ -67,7 +67,9 @@ jobs:
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
+          git branch maven
           git add ./maven/
+          git commit -m "added to maven repository"
           git push maven master
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
