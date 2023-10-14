@@ -67,15 +67,14 @@ jobs:
       - name: Maven ブランチ作成
         shell: bash
         run: |
+          git config --global user.email "Hiyuuu@github.com"
+          git config --global user.name "Hiyuuu"
           git switch --orphan maven
           git commit --allow-empty -m "initial maven branch"
           git push -u origin maven
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
-          git config --global user.email "Hiyuuu@github.com"
-          git config --global user.name "Hiyuuu"
-          
           git add ./maven/
           git commit -m "added to maven repository"
           git push maven master
