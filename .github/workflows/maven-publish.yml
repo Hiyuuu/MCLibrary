@@ -22,6 +22,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Maven ブランチ作成
+        continue-on-error: true
+        shell: bash
+        run: |
+          git config --global user.email "Hiyuuu@github.com"
+          git config --global user.name "Hiyuuu"
+          git switch --orphan maven
+          git commit --allow-empty -m "initial maven branch"
+          git push -u origin maven
       - name: チェックアウト - Master
         uses: actions/checkout@v3
       - name: Javaを準備中
@@ -64,15 +73,6 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Maven ブランチ作成
-        continue-on-error: true
-        shell: bash
-        run: |
-          git config --global user.email "Hiyuuu@github.com"
-          git config --global user.name "Hiyuuu"
-          git switch --orphan maven
-          git commit --allow-empty -m "initial maven branch"
-          git push -u origin maven
       - name: チェックアウト - Master
         uses: actions/checkout@v3
       - name: Mavenブランチにプッシュ
