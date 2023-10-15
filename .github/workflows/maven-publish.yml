@@ -73,8 +73,6 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: チェックアウト - Master
-        uses: actions/checkout@v3
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
