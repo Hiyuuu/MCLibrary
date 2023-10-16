@@ -72,8 +72,7 @@ jobs:
           # git pull maven
           git checkout -b maven
           git checkout master ./maven
-          cd ./maven
-          git add .
+          git add ./maven
           git commit --allow-empty -m "added to maven repository"
           tree
           git status
