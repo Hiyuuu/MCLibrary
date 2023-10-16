@@ -22,15 +22,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Maven ブランチ作成
-        continue-on-error: true
-        shell: bash
-        run: |
-          git config --global user.email "Hiyuuu@github.com"
-          git config --global user.name "Hiyuuu"
-          git switch --orphan maven
-          git commit --allow-empty -m "initial maven branch"
-          git push maven
       - name: チェックアウト - Master
         uses: actions/checkout@v3
       - name: Javaを準備中
@@ -76,11 +67,13 @@ jobs:
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
+          git config --global user.email "Hiyuuu@github.com"
+          git config --global user.name "Hiyuuu"
+          git switch --orphan maven
           git checkout maven
-          
-          # git checkout master maven
+          git checkout master maven
           git add ./maven
-          git commit -m "added to maven repository"
+          git commit --allow-empty -m "added to maven repository"
           tree
           git push maven
       - name: チェックアウト - Maven
