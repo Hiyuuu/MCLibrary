@@ -69,13 +69,12 @@ jobs:
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "Hiyuuu"
-          git fetch
-          git checkout maven
-          git checkout master -- /maven
+          # git checkout maven
+          # git checkout master -- /maven
           git add ./maven
           git commit --allow-empty -m "added to maven repository"
           tree
-          git push maven
+          git push origin maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
         with:
