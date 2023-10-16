@@ -70,13 +70,13 @@ jobs:
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "Hiyuuu"
           # git pull maven
-          git checkout -b maven
+          git checkout -b --orphan maven
           git checkout master ./maven
           git add ./maven
           git commit --allow-empty -m "added to maven repository"
           tree
           git status
-          git push -f maven
+          git push -f --set-upstream origin maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
         with:
