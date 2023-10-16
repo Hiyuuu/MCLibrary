@@ -76,12 +76,12 @@ jobs:
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
-          git add ./maven
-          git commit -m "added to maven repository"
           git checkout maven
           git checkout master ./maven
+          git add ./maven
+          git commit -m "added to maven repository"
           tree
-          git push --force -u origin maven
+          git push maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
         with:
