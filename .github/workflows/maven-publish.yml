@@ -78,7 +78,9 @@ jobs:
         run: |
           git add ./maven
           git commit -m "added to maven repository"
-          git branch
+          git checkout maven
+          git checkout master /maven
+          tree
           git push --force -u origin maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
