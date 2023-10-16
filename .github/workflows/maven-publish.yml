@@ -69,7 +69,7 @@ jobs:
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "Hiyuuu"
-          git switch --orphan maven
+          git fetch
           git checkout maven
           git checkout master -- /maven
           git add ./maven
