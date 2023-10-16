@@ -71,11 +71,11 @@ jobs:
           git config --global user.name "Hiyuuu"
           # git checkout maven
           # git checkout master -- /maven
-          git pull
           cd ./maven
           git add .
           git commit --allow-empty -m "added to maven repository"
           tree
+          git status
           git push origin maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
