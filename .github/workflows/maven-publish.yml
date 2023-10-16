@@ -77,7 +77,7 @@ jobs:
           git commit --allow-empty -m "added to maven repository"
           tree
           git status
-          git push
+          git push --set-upstream origin maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
         with:
