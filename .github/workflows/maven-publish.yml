@@ -72,7 +72,7 @@ jobs:
           git switch --orphan maven
           git fetch
           git checkout maven
-          git checkout master maven
+          git checkout master ./maven
           git add ./maven
           git commit --allow-empty -m "added to maven repository"
           tree
