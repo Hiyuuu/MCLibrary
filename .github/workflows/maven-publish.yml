@@ -77,7 +77,7 @@ jobs:
         shell: bash
         run: |
           git checkout maven
-          git checkout master ./maven
+          git checkout master maven
           git add ./maven
           git commit -m "added to maven repository"
           tree
