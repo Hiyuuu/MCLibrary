@@ -70,7 +70,7 @@ jobs:
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "Hiyuuu"
           git pull maven
-          git checkout maven
+          git checkout -b maven
           git checkout master ./maven
           cd ./maven
           git add .
