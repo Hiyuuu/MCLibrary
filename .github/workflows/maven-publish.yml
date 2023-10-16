@@ -79,7 +79,7 @@ jobs:
           git add ./maven
           git commit -m "added to maven repository"
           git checkout maven
-          git checkout master /maven
+          git checkout master ./maven
           tree
           git push --force -u origin maven
       - name: チェックアウト - Maven
