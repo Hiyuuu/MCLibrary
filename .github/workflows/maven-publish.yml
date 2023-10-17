@@ -71,8 +71,8 @@ jobs:
           git config --global user.name "Hiyuuu"
           # git pull maven
           # git checkout -b maven
-          
           git checkout --orphan maven
+          git rm -rf .
           git checkout master ./maven
           git add ./maven
           git commit --allow-empty -m "added to maven repository"
