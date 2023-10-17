@@ -75,7 +75,7 @@ jobs:
           git checkout --orphan maven
           git rm -rf .
           git checkout master ./maven
-          mv -R ./maven/* ./
+          mv ./maven/* ./
           git add .
           git commit --allow-empty -m "added to maven repository"
           tree
