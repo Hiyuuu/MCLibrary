@@ -144,10 +144,14 @@ class ConfigReader {
                     } else if (conf.isSet(section)) {
 
                         // 情報取得してクラスに代入
-                        val getObj = conf.getObject(section, clazz)
-                        runCatching {
-                            getObj?.let { f.set(classInstance, getObj) }
-                        }.exceptionOrNull()?.printStackTrace()
+                        // 代入ができてなさそうだったのでコメントアウト
+//                        val getObj = conf.getObject(section, clazz)
+//                        runCatching {
+//                            getObj?.let { f.set(classInstance, getObj) }
+//                        }.exceptionOrNull()?.printStackTrace()
+
+                        val getObj = conf.get(section)
+                        getObj?.let { f.set(classInstance, getObj) }
 
                     } else if (!conf.isSet(section) && !conf.isConfigurationSection(section)) {
 
