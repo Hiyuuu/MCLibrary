@@ -160,9 +160,8 @@ public class ConfigUtils extends YamlConfiguration {
 
             // resources ファイルとの差分を抽出
             if (!isConfigurationSection(k) && !isSet(k)) {
-
-                this.set(k, obj);
                 this.setComments(k, comments);
+                this.set(k, obj);
                 this.setInlineComments(k, inlineComments);
             }
         });
