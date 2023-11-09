@@ -72,16 +72,15 @@ jobs:
           # git pull maven
           # git checkout -b maven
 
-
           git checkout maven
           # git checkout --orphan maven
           # git rm -rf .
-          git checkout master ./maven/$GROUP/$NAME/$VERSION
+          git checkout master ./maven
           mv ./maven/* ./
           
           ls -l
-#          git rm -rf ./.gradle
-#          git rm -rf ./build
+          # git rm -rf ./.gradle
+          # git rm -rf ./build
           
           git add .
           git commit --allow-empty -m "added to maven repository"
