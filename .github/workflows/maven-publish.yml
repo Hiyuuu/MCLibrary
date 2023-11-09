@@ -71,13 +71,16 @@ jobs:
           git config --global user.name "Hiyuuu"
           # git pull maven
           # git checkout -b maven
-          
-          git checkout --orphan maven
-          git rm -rf .
-          git checkout master ./maven
+
+          git checkout maven
+          # git checkout --orphan maven
+          # git rm -rf .
+          git checkout master ./maven/$GROUP/$NAME/$VERSION
           mv ./maven/* ./
-          # git rm -rf ./.gradle
-          # git rm -rf ./build
+          
+          git rm -rf ./.gradle
+          git rm -rf ./build
+          
           git add .
           git commit --allow-empty -m "added to maven repository"
           tree
