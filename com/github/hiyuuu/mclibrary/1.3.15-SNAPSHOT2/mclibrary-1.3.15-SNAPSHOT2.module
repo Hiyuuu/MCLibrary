@@ -1,0 +1,100 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.github.hiyuuu",
+    "module": "mclibrary",
+    "version": "1.3.15-SNAPSHOT2",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "files": [
+        {
+          "name": "mclibrary-1.3.15-SNAPSHOT2.jar",
+          "url": "mclibrary-1.3.15-SNAPSHOT2.jar",
+          "size": 78240,
+          "sha512": "696e979bace3f02faf7e231af5a3e1ea886e82c8d06344d1da368c2a13af9ba235a25a86e5e8eeb04f11d7831df61d0f5b67542fb8bd8d0ced782d7930c96443",
+          "sha256": "b14af850766dd3616dda0a0d2e785160f50c14ab606d3fd4d7a3a978215da8d9",
+          "sha1": "2cb0dc3c7b44af60acc7f7f2f8c4f2085e97540f",
+          "md5": "2d77e37657fb342fa8e43db84de6663a"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 8,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.0"
+          }
+        },
+        {
+          "group": "org.apache.commons",
+          "module": "commons-lang3",
+          "version": {
+            "requires": "3.13.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "mclibrary-1.3.15-SNAPSHOT2.jar",
+          "url": "mclibrary-1.3.15-SNAPSHOT2.jar",
+          "size": 78240,
+          "sha512": "696e979bace3f02faf7e231af5a3e1ea886e82c8d06344d1da368c2a13af9ba235a25a86e5e8eeb04f11d7831df61d0f5b67542fb8bd8d0ced782d7930c96443",
+          "sha256": "b14af850766dd3616dda0a0d2e785160f50c14ab606d3fd4d7a3a978215da8d9",
+          "sha1": "2cb0dc3c7b44af60acc7f7f2f8c4f2085e97540f",
+          "md5": "2d77e37657fb342fa8e43db84de6663a"
+        }
+      ]
+    },
+    {
+      "name": "shadowRuntimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "shadowed",
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "mclibrary-1.3.15-SNAPSHOT2-all.jar",
+          "url": "mclibrary-1.3.15-SNAPSHOT2-all.jar",
+          "size": 2467727,
+          "sha512": "0bdd42b61cc08542c676dc7faef9ccd04f1c2d925116664864a983bb955806f92537355bbc9db9732c3b610ba730b499d928f165698dc58079e8d6bd2a754b86",
+          "sha256": "5c48183eae8dfb49ed2da280d582cd2a6501949355726b5ae049e226cd801394",
+          "sha1": "4a8978848a0fa8c3ed6ade5dcffb79bd4315dae9",
+          "md5": "f0a96f60b2032fecd34d522f83bf5e03"
+        }
+      ]
+    }
+  ]
+}
