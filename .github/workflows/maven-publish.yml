@@ -79,6 +79,8 @@ jobs:
           # git checkout master
           # git checkout --orphan maven
           
+          tree
+          
           echo master ブランチからファイルをコピー
           git checkout master -- maven
           mv ./maven/* ./
