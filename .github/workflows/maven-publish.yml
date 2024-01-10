@@ -72,7 +72,7 @@ jobs:
           git config --global user.name "github-actions[bot]"
           
           echo maven レポジトリへチェックアウト
-          git fetch
+          git pull maven
           git checkout -b maven
           
           echo master ブランチからファイルをコピー
