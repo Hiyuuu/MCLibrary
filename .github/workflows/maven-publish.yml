@@ -73,7 +73,7 @@ jobs:
           
           echo maven レポジトリへチェックアウト
           git pull maven
-#          git checkout -b maven
+          # git checkout -b maven
           git checkout maven
           
           echo master ブランチからファイルをコピー
