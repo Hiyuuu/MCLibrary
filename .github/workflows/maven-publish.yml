@@ -84,7 +84,8 @@ jobs:
           # git rm -rf .
           echo copy master to maven repository
           git checkout master ./maven
-          mv -R ./maven/* ./
+          cp -R ./maven/* ./
+          rm -R ./maven
           
           # ls -l
           # git rm -rf ./.gradle
