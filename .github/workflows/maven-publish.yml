@@ -5,9 +5,9 @@ on:
     branches:
       - master
     types: [closed]
-   push:
-     branches:
-       - master
+  push:
+    branches:
+      - master
 
 permissions:
   contents: write
