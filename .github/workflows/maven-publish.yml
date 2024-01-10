@@ -79,13 +79,12 @@ jobs:
           echo checkout maven
           git checkout -b maven
 
-
           # git checkout maven
           # git checkout --orphan maven
           # git rm -rf .
           echo copy master to maven repository
           git checkout master ./maven
-          mv ./maven/* ./
+          mv -R ./maven/* ./
           
           # ls -l
           # git rm -rf ./.gradle
