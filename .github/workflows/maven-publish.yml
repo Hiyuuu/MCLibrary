@@ -76,14 +76,14 @@ jobs:
           # git checkout -b maven
           # git checkout maven
           git branch
-           git checkout master
-           git checkout -b maven
+          git checkout master
+          git checkout -b maven
           
           tree
           
           echo master ブランチからファイルをコピー
-          git checkout master -- .maven
-          mv ./maven/* ./
+          git checkout master -- .\maven
+          # mv ./maven/* ./
 
           # echo pull maven
           # git pull maven
