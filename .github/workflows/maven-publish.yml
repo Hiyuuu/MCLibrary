@@ -70,12 +70,15 @@ jobs:
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
+          echo pull maven
           git pull maven
+          echo checkout maven
           git checkout -b maven
 
           # git checkout maven
           # git checkout --orphan maven
           # git rm -rf .
+          echo copy master to maven repository
           git checkout master ./maven
           mv ./maven/* ./
           
@@ -83,10 +86,13 @@ jobs:
           # git rm -rf ./.gradle
           # git rm -rf ./build
           
+          echo commit files
           git add .
           git commit --allow-empty -m "added to maven repository"
+          echo file trees
           tree
           git status
+          echo push files
           git push -f --set-upstream origin maven
       - name: チェックアウト - Maven
         uses: actions/checkout@v3
