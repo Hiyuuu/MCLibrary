@@ -71,6 +71,7 @@ jobs:
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
+          ls -l
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
 
