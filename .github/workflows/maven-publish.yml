@@ -85,7 +85,7 @@ jobs:
           
           echo master ブランチからファイルをコピー
           git checkout master -- .
-          ls | egrep -v 'maven'| xargs rm -r
+          ls -l | egrep -v 'maven'| xargs rm -r
           mv ./maven/* ./
 
           # echo pull maven
