@@ -93,7 +93,7 @@ jobs:
           
           echo ファイルをコミット
           tree
-          git add ./maven
+          git add ./com
           git commit --allow-empty -m "added to maven repository"
           
           echo ファイルをプッシュ
