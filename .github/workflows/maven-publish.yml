@@ -1,4 +1,4 @@
-name: GithubPagesへレポジトリをデプロイ
+name: Mavenレポジトリへデプロイ
 
 on:
   pull_request:
@@ -39,9 +39,9 @@ jobs:
       - id: set_variable
         name: build.gradle の変数取得
         run: |
-            echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
+          echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
+          echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
+          echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
       - name: ディレクトリチェック
         continue-on-error: true
         id: folder_check
@@ -64,20 +64,25 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
           git config --global user.email "Hiyuuu@github.com"
-          git config --global user.name "Hiyuuu"
-          # git pull maven
-          # git checkout -b maven
-          
-          git checkout --orphan maven
-          git rm -rf .
+          git config --global user.name "github-actions[bot]"
+          git pull maven
+          git checkout -b maven
+
+          # git checkout maven
+          # git checkout --orphan maven
+          # git rm -rf .
           git checkout master ./maven
           mv ./maven/* ./
-          git rm -rf ./.gradle
-          git rm -rf ./build
+          
+          # ls -l
+          # git rm -rf ./.gradle
+          # git rm -rf ./build
+          
           git add .
           git commit --allow-empty -m "added to maven repository"
           tree
