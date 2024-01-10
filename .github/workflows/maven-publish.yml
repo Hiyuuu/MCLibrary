@@ -77,12 +77,13 @@ jobs:
           # git checkout maven
           git branch
           git checkout master
+          tree
           git checkout -b maven
           
           tree
           
           echo master ブランチからファイルをコピー
-          git checkout master -- .\maven
+          git checkout master -- .
           # mv ./maven/* ./
 
           # echo pull maven
@@ -104,7 +105,7 @@ jobs:
           
           echo ファイルをコミット
           tree
-          git add ./com
+          git add .
           git commit --allow-empty -m "added to maven repository"
           # git checkout --orphan maven
           
