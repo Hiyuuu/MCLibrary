@@ -110,7 +110,7 @@ jobs:
           
           
           echo ファイルをプッシュ
-          git push -f --set-upstream origin maven
+          git push -f --set-upstream origin HEAD:maven
       - name: ページをセットアップ中
         uses: actions/configure-pages@v3
       - name: ページをビルド中 (Jekyll)
