@@ -111,7 +111,6 @@ jobs:
           git commit --allow-empty -m "added to maven repository"
           # git checkout --orphan maven
           
-          
           echo ファイルをプッシュ
           git push -f --set-upstream origin HEAD:maven
       - name: ページをセットアップ中
@@ -119,7 +118,7 @@ jobs:
       - name: ページをビルド中 (Jekyll)
         uses: actions/jekyll-build-pages@v1
         with:
-          source: ./maven
+          source: ./
           destination: ./_site
       - name: アーティファクトをアップロード中
         uses: actions/upload-pages-artifact@v2
