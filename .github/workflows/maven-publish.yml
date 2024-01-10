@@ -69,6 +69,7 @@ jobs:
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
+          git branch -r
           echo checkout maven
           git checkout -b maven
           
