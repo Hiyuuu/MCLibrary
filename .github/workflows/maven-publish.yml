@@ -76,8 +76,8 @@ jobs:
           # git checkout -b maven
           # git checkout maven
           git branch
-          git checkout master
-          git checkout --orphan maven
+#          git checkout master
+#          git checkout --orphan maven
           
           echo master ブランチからファイルをコピー
           git checkout master -- maven
