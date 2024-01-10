@@ -64,6 +64,12 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/checkout@v4
+        with:
+          repository: 'maven'
+          sparse-checkout: |
+            maven
+            com
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
@@ -76,10 +82,10 @@ jobs:
           # git checkout -b maven
           # git checkout maven
           git branch
-          git checkout master
+          # git checkout master
           tree
-          git pull maven
-          git checkout maven
+          # git pull maven
+          # git checkout maven
           # git checkout --orphan maven
           
           tree
