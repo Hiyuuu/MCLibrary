@@ -73,6 +73,7 @@ jobs:
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
+
           git branch -r
           echo pull maven
           git pull maven
@@ -87,7 +88,7 @@ jobs:
           cp -R ./maven/* ./
           rm -R ./maven
           
-          # ls -l
+          ls -l
           # git rm -rf ./.gradle
           # git rm -rf ./build
           
