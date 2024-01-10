@@ -106,6 +106,8 @@ jobs:
           tree
           git add ./com
           git commit --allow-empty -m "added to maven repository"
+          git checkout --orphan maven
+          
           
           echo ファイルをプッシュ
           git push -f --set-upstream origin maven
