@@ -24,10 +24,6 @@ jobs:
     steps:
       - name: チェックアウト - Master
         uses: actions/checkout@v3
-      # - name: Javaを準備中
-      #   uses: actions/setup-java@v1
-      #   with:
-      #     java-version: 1.8
       - name: キャッシュ を準備中
         uses: actions/cache@v2
         with:
@@ -97,7 +93,7 @@ jobs:
           
           echo ファイルをコミット
           tree
-          git add .
+          git add ./maven
           git commit --allow-empty -m "added to maven repository"
           
           echo ファイルをプッシュ
