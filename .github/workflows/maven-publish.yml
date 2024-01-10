@@ -5,9 +5,9 @@ on:
     branches:
       - master
     types: [closed]
-  # push:
-  #   branches:
-  #     - master
+   push:
+     branches:
+       - master
 
 permissions:
   contents: write
@@ -69,6 +69,10 @@ jobs:
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
+          
+          git checkout -b maven
+          git checkout master -- maven
+          ls -l
 
           # echo pull maven
           # git pull maven
