@@ -85,7 +85,7 @@ jobs:
           # git checkout --orphan maven
           # git rm -rf .
           echo copy master to maven repository
-          git checkout master /maven
+          git checkout master -- maven
           cp -R ./maven/* ./
           rm -R ./maven
           
