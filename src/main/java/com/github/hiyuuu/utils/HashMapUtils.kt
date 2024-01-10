@@ -12,5 +12,9 @@ interface HashMapUtils {
      */
     fun <K, V> HashMap<K, V>.replaceHashMapKey(newKey: K, conditions: (K) -> Boolean)
             = this.keys.filter(conditions).forEach { v -> this.remove(v)?.let { this[newKey] = it } }
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> origin/master
 }

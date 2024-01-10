@@ -3,14 +3,14 @@
   "component": {
     "group": "com.github.hiyuuu",
     "module": "mclibrary",
-    "version": "1.3.15-SNAPSHOT2",
+    "version": "1.3.18",
     "attributes": {
       "org.gradle.status": "release"
     }
   },
   "createdBy": {
     "gradle": {
-      "version": "8.3"
+      "version": "8.5"
     }
   },
   "variants": [
@@ -27,13 +27,13 @@
       },
       "files": [
         {
-          "name": "mclibrary-1.3.15-SNAPSHOT2.jar",
-          "url": "mclibrary-1.3.15-SNAPSHOT2.jar",
-          "size": 78240,
-          "sha512": "696e979bace3f02faf7e231af5a3e1ea886e82c8d06344d1da368c2a13af9ba235a25a86e5e8eeb04f11d7831df61d0f5b67542fb8bd8d0ced782d7930c96443",
-          "sha256": "b14af850766dd3616dda0a0d2e785160f50c14ab606d3fd4d7a3a978215da8d9",
-          "sha1": "2cb0dc3c7b44af60acc7f7f2f8c4f2085e97540f",
-          "md5": "2d77e37657fb342fa8e43db84de6663a"
+          "name": "mclibrary-1.3.18.jar",
+          "url": "mclibrary-1.3.18.jar",
+          "size": 110505,
+          "sha512": "6f8513f5352103d9b871855f5c19d734d00a2b0523b9a4560d00ac1e3f2bb03da4c0bdbe1b936cf9feb9fbae56bfaa244e80e0a57b48bec9529bea476f4b2b1a",
+          "sha256": "355a53791e14db440708932321b1540d9870f1f5dfebd9e24fc8642529307681",
+          "sha1": "eb9ad72b918b8cb203027ee73dbabb62157c440c",
+          "md5": "949f830a684b0f5ed0d6551b55dd18e2"
         }
       ]
     },
@@ -66,13 +66,13 @@
       ],
       "files": [
         {
-          "name": "mclibrary-1.3.15-SNAPSHOT2.jar",
-          "url": "mclibrary-1.3.15-SNAPSHOT2.jar",
-          "size": 78240,
-          "sha512": "696e979bace3f02faf7e231af5a3e1ea886e82c8d06344d1da368c2a13af9ba235a25a86e5e8eeb04f11d7831df61d0f5b67542fb8bd8d0ced782d7930c96443",
-          "sha256": "b14af850766dd3616dda0a0d2e785160f50c14ab606d3fd4d7a3a978215da8d9",
-          "sha1": "2cb0dc3c7b44af60acc7f7f2f8c4f2085e97540f",
-          "md5": "2d77e37657fb342fa8e43db84de6663a"
+          "name": "mclibrary-1.3.18.jar",
+          "url": "mclibrary-1.3.18.jar",
+          "size": 110505,
+          "sha512": "6f8513f5352103d9b871855f5c19d734d00a2b0523b9a4560d00ac1e3f2bb03da4c0bdbe1b936cf9feb9fbae56bfaa244e80e0a57b48bec9529bea476f4b2b1a",
+          "sha256": "355a53791e14db440708932321b1540d9870f1f5dfebd9e24fc8642529307681",
+          "sha1": "eb9ad72b918b8cb203027ee73dbabb62157c440c",
+          "md5": "949f830a684b0f5ed0d6551b55dd18e2"
         }
       ]
     },
@@ -86,13 +86,13 @@
       },
       "files": [
         {
-          "name": "mclibrary-1.3.15-SNAPSHOT2-all.jar",
-          "url": "mclibrary-1.3.15-SNAPSHOT2-all.jar",
-          "size": 2467727,
-          "sha512": "0bdd42b61cc08542c676dc7faef9ccd04f1c2d925116664864a983bb955806f92537355bbc9db9732c3b610ba730b499d928f165698dc58079e8d6bd2a754b86",
-          "sha256": "5c48183eae8dfb49ed2da280d582cd2a6501949355726b5ae049e226cd801394",
-          "sha1": "4a8978848a0fa8c3ed6ade5dcffb79bd4315dae9",
-          "md5": "f0a96f60b2032fecd34d522f83bf5e03"
+          "name": "mclibrary-1.3.18-all.jar",
+          "url": "mclibrary-1.3.18-all.jar",
+          "size": 2499992,
+          "sha512": "cda0807a903fee31e7923b2b091fab9c05afe8c7005011bcdbff8940d37fc2ae5ca004ff3e6ed22ac3fa31cfdc4901fd6cf955ee6891ce4253a1f7646128366d",
+          "sha256": "4193d5cf463e1d97e8c5201feb28927cc318b00dd54a1d91d4f20a7c8cbfed46",
+          "sha1": "3440dbf96d827be5f3a925de6b2e5348009da4c5",
+          "md5": "69053a508e981312ee293cdfc79b0b15"
         }
       ]
     }

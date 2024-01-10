@@ -8,7 +8,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.hiyuuu</groupId>
   <artifactId>mclibrary</artifactId>
-  <version>1.3.15-SNAPSHOT2</version>
+  <version>1.3.18</version>
   <dependencies>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>

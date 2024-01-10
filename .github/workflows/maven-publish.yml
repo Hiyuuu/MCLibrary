@@ -1,13 +1,13 @@
-name: GithubPagesへレポジトリをデプロイ
+name: Mavenレポジトリへデプロイ
 
 on:
   pull_request:
     branches:
       - master
     types: [closed]
-  push:
-    branches:
-      - master
+  # push:
+  #   branches:
+  #     - master
 
 permissions:
   contents: write
@@ -24,10 +24,10 @@ jobs:
     steps:
       - name: チェックアウト - Master
         uses: actions/checkout@v3
-      - name: Javaを準備中
-        uses: actions/setup-java@v1
-        with:
-          java-version: 1.8
+      # - name: Javaを準備中
+      #   uses: actions/setup-java@v1
+      #   with:
+      #     java-version: 1.8
       - name: キャッシュ を準備中
         uses: actions/cache@v2
         with:
@@ -36,62 +36,65 @@ jobs:
           key: maven-repository-${{ github.sha }}
           restore-keys: |
             maven-repository-
-      - id: set_variable
-        name: build.gradle の変数取得
-        run: |
-            echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
-      - name: ディレクトリチェック
-        continue-on-error: true
-        id: folder_check
-        shell: bash
-        run: |
-          NAME=$(echo ${{ steps.set_variable.outputs.name  }} | sed 's/[A-Z]/\L&/g')
-          GROUP=$(echo ${{ steps.set_variable.outputs.group  }} | sed 's/\./\//g')
-          VERSION=${{ steps.set_variable.outputs.version  }}
-          mkdir -p ./maven/$GROUP/$NAME/
-          cd ./maven/$GROUP/$NAME/
-          ls -ls
-          if [ -d "./maven/$GROUP/$NAME/$VERSION/" ]; then
-            echo "バージョンが既存するため処理を終了しました"
-            exit 1
-          else
-              echo "バージョンが存在しません"
-          fi
+      # - id: set_variable
+      #   name: build.gradle の変数取得
+      #   run: |
+      #     echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
+      #     echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
+      #     echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
+      # - name: ディレクトリチェック
+      #   continue-on-error: true
+      #   id: folder_check
+      #   shell: bash
+      #   run: |
+      #     NAME=$(echo ${{ steps.set_variable.outputs.name  }} | sed 's/[A-Z]/\L&/g')
+      #     GROUP=$(echo ${{ steps.set_variable.outputs.group  }} | sed 's/\./\//g')
+      #     VERSION=${{ steps.set_variable.outputs.version  }}
+      #     mkdir -p ./maven/$GROUP/$NAME/
+      #     cd ./maven/$GROUP/$NAME/
+      #     ls -ls
+      #     if [ -d "./maven/$GROUP/$NAME/$VERSION/" ]; then
+      #       echo "バージョンが既存するため処理を終了しました"
+      #       exit 1
+      #     else
+      #         echo "バージョンが存在しません"
+      #     fi
       - name: Mavenリポジトリを作成中
         run: gradle publish --warning-mode all
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
-          git pull maven
-          git checkout -b maven
 
-          # git checkout maven
-          # git checkout --orphan maven
-          # git rm -rf .
-          git checkout master ./maven
-          mv ./maven/* ./
+          # echo pull maven
+          # git pull maven
+          # echo checkout maven
+          # git checkout -b maven
+
+          # # git checkout maven
+          # # git checkout --orphan maven
+          # # git rm -rf .
+          # echo copy master to maven repository
+          # git checkout master -- maven
+          # cp -R ./maven/* ./
+          # rm -R ./maven
           
           # ls -l
-          # git rm -rf ./.gradle
-          # git rm -rf ./build
+          # # git rm -rf ./.gradle
+          # # git rm -rf ./build
           
-          git add .
-          git commit --allow-empty -m "added to maven repository"
+          echo commit files
+          git add ./maven
+          git commit --allow-empty -m "added to repository"
+          echo file trees
           tree
           git status
-          git push -f --set-upstream origin maven
-      - name: チェックアウト - Maven
-        uses: actions/checkout@v3
-        with:
-          path: 'maven'
+          echo push files
+          git push -f --set-upstream origin master
       - name: ページをセットアップ中
         uses: actions/configure-pages@v3
       - name: ページをビルド中 (Jekyll)
