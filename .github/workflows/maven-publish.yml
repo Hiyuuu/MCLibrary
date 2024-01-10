@@ -67,12 +67,15 @@ jobs:
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
+          echo git 設定初期化
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
           
+          echo maven レポジトリへチェックアウト
           git checkout -b maven
+          
+          echo master ブランチからファイルをコピー
           git checkout master -- maven
-          ls -l
 
           # echo pull maven
           # git pull maven
@@ -91,14 +94,13 @@ jobs:
           # # git rm -rf ./.gradle
           # # git rm -rf ./build
           
-          echo commit files
-          git add ./maven
-          git commit --allow-empty -m "added to repository"
-          echo file trees
+          echo ファイルをコミット
           tree
-          git status
-          echo push files
-          git push -f --set-upstream origin master
+          git add .
+          git commit --allow-empty -m "added to maven repository"
+          
+          echo ファイルをプッシュ
+          git push -f --set-upstream origin maven
       - name: ページをセットアップ中
         uses: actions/configure-pages@v3
       - name: ページをビルド中 (Jekyll)
