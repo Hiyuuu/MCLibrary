@@ -64,17 +64,20 @@ jobs:
         env:
           GITHUB_ACTOR: ${{ secrets.GITHUB_ACTOR }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: チェックアウト - Maven
+        uses: actions/checkout@v3
+        with:
+          path: 'maven'
       - name: Mavenブランチにプッシュ
         shell: bash
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
           git branch -r
-          echo checkout maven
-          git checkout -b maven
-          
           echo pull maven
           git pull maven
+          echo checkout maven
+          git checkout -b maven
 
 
           # git checkout maven
