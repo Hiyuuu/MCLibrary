@@ -1,4 +1,4 @@
-name: GithubPagesへレポジトリをデプロイ
+name: Mavenレポジトリへデプロイ
 
 on:
   pull_request:
@@ -39,9 +39,9 @@ jobs:
       - id: set_variable
         name: build.gradle の変数取得
         run: |
-            echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
-            echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
+          echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
+          echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
+          echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
       - name: ディレクトリチェック
         continue-on-error: true
         id: folder_check
