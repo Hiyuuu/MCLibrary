@@ -70,8 +70,8 @@ jobs:
         run: |
           git config --global user.email "Hiyuuu@github.com"
           git config --global user.name "github-actions[bot]"
-          echo pull maven
-          git pull maven
+          # echo pull maven
+          # git pull maven
           echo checkout maven
           git checkout -b maven
 
