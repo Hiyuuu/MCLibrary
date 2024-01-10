@@ -106,7 +106,7 @@ jobs:
           tree
           git add ./com
           git commit --allow-empty -m "added to maven repository"
-          git checkout --orphan maven
+          # git checkout --orphan maven
           
           
           echo ファイルをプッシュ
