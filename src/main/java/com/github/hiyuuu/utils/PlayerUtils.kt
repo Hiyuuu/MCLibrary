@@ -12,6 +12,6 @@ interface PlayerUtils {
      * プレイヤーインスタンスを最新状態へ変更する
      * @see プレイヤーがオフラインの場合は、元のインスタンスを返します
      */
-    private fun Player.new() : Player = Bukkit.getPlayer(this.uniqueId) ?: this
+    fun Player.new() : Player = Bukkit.getPlayer(this.uniqueId) ?: this
 
 }
