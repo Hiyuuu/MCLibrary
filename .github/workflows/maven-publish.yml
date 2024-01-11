@@ -86,7 +86,7 @@ jobs:
           # git checkout master
           # git checkout --orphan maven
           
-          git checkout origin/maven
+          git checkout maven
           # git pull maven
 
           
