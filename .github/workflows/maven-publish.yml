@@ -83,10 +83,9 @@ jobs:
           # git checkout maven
           git branch
           tree
-          # git checkout master
+          git checkout master          
+          git checkout -b maven
           # git checkout --orphan maven
-        
-          git checkout maven
           # git pull maven
 
           
