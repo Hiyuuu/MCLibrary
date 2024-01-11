@@ -66,7 +66,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/checkout@v4
         with:
-          repository: 'origin/maven'
+          path: 'maven'
           sparse-checkout: |
             maven
             com
