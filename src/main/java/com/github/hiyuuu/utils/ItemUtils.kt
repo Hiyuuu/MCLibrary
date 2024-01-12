@@ -104,7 +104,7 @@ class ItemUtils(function: (ItemUtils) -> Unit = {}) : ItemStack(Material.STONE) 
         val ptextures = profile.textures
 
         ptextures.skin = runCatching {
-            URL("https://sessionserver.mojang.com/session/minecraft/profile/${textures}")
+            URL("https://textures.minecraft.net/texture/${textures}")
         }.getOrNull() ?: return this
 
         profile.setTextures(ptextures)
