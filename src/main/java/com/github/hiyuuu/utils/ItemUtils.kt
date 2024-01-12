@@ -1,7 +1,5 @@
 package com.github.hiyuuu.utils
 
-import com.mojang.authlib.GameProfile
-import com.mojang.authlib.properties.Property
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -15,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta
 import org.bukkit.inventory.meta.SkullMeta
 import org.bukkit.persistence.PersistentDataType
 import org.bukkit.plugin.Plugin
-import org.bukkit.profile.PlayerProfile
 import java.net.URL
 import java.util.*
 
@@ -100,24 +97,24 @@ class ItemUtils(function: (ItemUtils) -> Unit = {}) : ItemStack(Material.STONE) 
         return this
     }
 
-    fun makeCustomSkull(textures: String) : ItemUtils {
-        val signature = "H116D5fhmj/7BVWqiRQilXmvoJO6wJzXH4Dvou6P2o9YMb+HaJT8s9+zt03GMYTipzK+NsW2D2JfzagnxLUTuiOtrCHm6V2udOM0HG0JeL4zR0Wn5oHmu+S7kUPUbt7HVlKaRXry5bobFQ06nUf7hOV3kPfpUJsfMajfabmoJ9RGMRVot3uQszjKOHQjxyAjfHP2rjeI/SktBrSscx0DzwBW9LCra7g/6Cp7/xPQTIZsqz2Otgp6i2h3YpXJPy02j4pIk0H4biR3CaU7FB0V4/D1Hvjd08giRvUpqF0a1w9rbpIWIH5GTUP8eLFdG/9SnHqMCQrTj4KkQiN0GdBO18JvJS/40LTn3ZLag5LBIa7AyyGus27N3wdIccvToQ6kHHRVpW7cUSXjircg3LOsSQbJmfLoVJ/KAF/m+de4PxIjOJIcbiOkVyQfMQltPg26VzRiu3F0qRvJNAAydH8AHdaqhkpSf6yjHqPU3p3BHFJld5o59WoD4WNkE3wOC//aTpV/f9RJ0JQko08v2mGBVKx7tpN7vHD1qD5ILzV1nDCV1/qbKgiOK9QmdXqZw9J3pM/DHtZ6eiRKni9BuGWlbWFN/qfFO2xY+J7SYFqTxBbffmvwvuF83QP5UdRTNVLYoV5S+yR5ac7fVWUZmLbq7tawyuCu0Dw24M9E1BSnpSc="
-        val randomUUID = UUID.randomUUID()
-        val gameProfile = GameProfile(randomUUID, randomUUID.toString().replace("-", ""))
 
-        gameProfile.properties.put("textures", Property("textures", textures, signature))
+    fun makeCustomSkull(textures: String) : ItemUtils {
+
+        val profile = Bukkit.createPlayerProfile(UUID.randomUUID())
+        val ptextures = profile.textures
+
+        ptextures.skin = runCatching {
+            URL("https://sessionserver.mojang.com/session/minecraft/profile/${textures}")
+        }.getOrNull() ?: return this
+
+        profile.setTextures(ptextures)
 
         this.type = Material.PLAYER_HEAD
-        val damageable = itemMetaData.invoke() as? Damageable ?: throw IllegalStateException("item is not player head")
-        damageable.damage = 3
+        val skullItemMeta = itemMetaData.invoke() as Damageable
+        skullItemMeta.damage = 3
 
-        val skullMeta = damageable as SkullMeta?
-        runCatching {
-            val profileField = skullMeta!!.javaClass.getDeclaredField("profile")
-            profileField.isAccessible = true
-            profileField.set(skullMeta, gameProfile)
-        }
-        this.setItemMeta(skullMeta)
+        (skullItemMeta as SkullMeta).ownerProfile = profile
+        this.setItemMeta(skullItemMeta)
 
         return this
     }
