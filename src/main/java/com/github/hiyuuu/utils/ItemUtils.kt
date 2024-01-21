@@ -1,5 +1,7 @@
 package com.github.hiyuuu.utils
 
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import org.bukkit.Bukkit
 import org.bukkit.Material
 import org.bukkit.NamespacedKey
@@ -100,13 +102,20 @@ class ItemUtils(function: (ItemUtils) -> Unit = {}) : ItemStack(Material.STONE) 
 
     fun makeCustomSkull(textures: String) : ItemUtils {
 
+        val decoded = Base64.getDecoder().decode(textures).let { String(it) }
+        val url = runCatching {
+            JsonParser.parseString(decoded)
+                .asJsonObject
+                .getAsJsonObject("textures")
+                .getAsJsonObject("SKIN")
+                .get("url")
+                .asString
+        }.getOrNull() ?: return this
+
         val profile = Bukkit.createPlayerProfile(UUID.randomUUID())
         val ptextures = profile.textures
 
-        ptextures.skin = runCatching {
-            URL("https://textures.minecraft.net/texture/${textures}")
-        }.getOrNull() ?: return this
-
+        ptextures.skin = URL(url)
         profile.setTextures(ptextures)
 
         this.type = Material.PLAYER_HEAD
