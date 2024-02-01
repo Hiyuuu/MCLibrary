@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+@Deprecated
 public class GUIUtils implements Listener  {
 
     private Plugin plugin;

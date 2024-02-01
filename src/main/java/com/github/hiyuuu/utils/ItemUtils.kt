@@ -93,6 +93,8 @@ class ItemUtils(function: (ItemUtils) -> Unit = {}) : ItemStack(Material.STONE) 
     }
 
     fun makePlayerSkull(offlinePlayer: OfflinePlayer) : ItemUtils {
+
+        this.type = Material.PLAYER_HEAD
         val skullMeta = itemMetaData.invoke() as? SkullMeta ?: throw IllegalStateException("item is not player head")
         skullMeta.owningPlayer = offlinePlayer
         this.setItemMeta(skullMeta)

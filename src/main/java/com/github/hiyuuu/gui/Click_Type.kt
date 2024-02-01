@@ -1,5 +1,6 @@
 package com.github.hiyuuu.gui
 
+@Deprecated("")
 enum class Click_Type {
 
         //片方クリック

@@ -1,5 +1,6 @@
 package com.github.hiyuuu.guimaker
 
+import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 import org.bukkit.inventory.Inventory
 
@@ -25,14 +26,14 @@ class GUIMakerSession {
         fun clearLocal(sessionName: String) : Boolean {
             val localSessions = sessions.filter { it.key.contains("-$sessionName") }
             if (localSessions.isEmpty()) return false
-            localSessions.forEach { session, _ ->
+            localSessions.forEach { (session, _) ->
                 sessions.remove(session)
             }
             return true
         }
 
-        private fun localKey(player: Player, sessionName: String)
-            = "${player.uniqueId}-$sessionName"
+        private fun localKey(player: Player, sessionName: String) : String
+                = "${player.uniqueId}-$sessionName"
 
         fun saveGlobal(sessionName: String, inventory: Inventory)
                 = sessions.set(sessionName, inventory)
