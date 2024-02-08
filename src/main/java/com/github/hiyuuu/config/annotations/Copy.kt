@@ -1,7 +1,11 @@
 package com.github.hiyuuu.config.annotations
 
-@Target(AnnotationTarget.CLASS, AnnotationTarget.FIELD)
+/**
+ * セクションまたはセットをコピーするアノテーション
+ */
+@Target(AnnotationTarget.FIELD)
 @Retention(AnnotationRetention.RUNTIME)
+@Repeatable
 annotation class Copy(
-    val fromPath: String
+    val fromPath : String
 )

@@ -1,32 +1,66 @@
-package com.github.hiyuuu.config;
+package com.github.hiyuuu.config
 
-import com.github.hiyuuu.config.events.ConfigReloadEvent;
-import com.github.hiyuuu.config.events.ConfigSaveDefaultEvent;
-import com.github.hiyuuu.config.events.ConfigSaveEvent;
-import com.github.hiyuuu.config.events.ConfigSetEvent;
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
+import com.github.hiyuuu.config.annotations.*
+import com.github.hiyuuu.config.events.ConfigReloadEvent
+import com.github.hiyuuu.config.events.ConfigSaveDefaultEvent
+import com.github.hiyuuu.config.events.ConfigSaveEvent
+import com.github.hiyuuu.config.events.ConfigSetEvent
+import org.bukkit.Bukkit
+import org.bukkit.configuration.InvalidConfigurationException
+import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.event.EventHandler
+import org.bukkit.event.EventPriority
+import org.bukkit.event.Listener
+import org.bukkit.event.server.PluginDisableEvent
+import org.bukkit.plugin.Plugin
+import org.bukkit.scheduler.BukkitRunnable
+import java.io.File
+import java.io.IOException
+import java.io.InputStreamReader
+import java.lang.reflect.Field
+import java.nio.charset.StandardCharsets
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
-import javax.annotation.Nullable;
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Set;
 
 /**
  * 自動再読み込みに対応したコンフィグユーティリティ
  */
-public class ConfigUtils extends YamlConfiguration {
+class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
 
-    private final Plugin plugin;
-    private File configFile;
-    private final boolean isAutoReload;
-    private long fileModifiedHistory;
-    public boolean isLoaded = false;
+    /**
+     * ファイルを取得
+     * @return File
+     */
+    lateinit var filePath: String
+    var file = File(plugin.dataFolder.parentFile, "config.yml")
+    var isLoaded = false
+    var isAutoReload: Boolean = true
+    var isLoadDefaultSection = true
+    var savedClass : Any? = null
+    var classCheckInterval = 100
+    private var fileModifiedHistory = 0L
+
+    constructor(plugin: Plugin, filePath: String, isAutoReload: Boolean = true, isLoadDefaultSection: Boolean = true) : this(plugin) {
+        this.plugin = plugin
+        this.filePath = filePath
+        this.isAutoReload = isAutoReload
+        this.isLoadDefaultSection = isLoadDefaultSection
+        this.initialize()
+        Bukkit.getPluginManager().registerEvents(this, plugin)
+    }
+
+    constructor(plugin: Plugin, filePath: String, classInstance: Any, isAutoReload: Boolean, isLoadDefaultSection: Boolean = false) : this(plugin) {
+        this.plugin = plugin
+        this.filePath = filePath
+        this.isAutoReload = isAutoReload
+        this.isLoadDefaultSection = isLoadDefaultSection
+        this.initialize()
+        this.registerClass(classInstance)
+        this.classMonitor()
+        Bukkit.getPluginManager().registerEvents(this, plugin)
+    }
 
     /**
      * コンフィグユーティリティ
@@ -35,139 +69,129 @@ public class ConfigUtils extends YamlConfiguration {
      * / 又は \ 等を含まない場合、プラグインのデータディレクトリ内へ自動的にスコープします。
      * @param isAutoReload 外部からファイルをエディター等で保存した場合に、即座に自動読み込みを行うか否か
      */
-    public ConfigUtils(Plugin plugin, String filePath, boolean isAutoReload) throws IOException, InvalidConfigurationException {
-
-        this.plugin = plugin;
-        this.isAutoReload = isAutoReload;
+    private fun initialize() {
 
         // ファイルパスを生成
-        String path = plugin
-                .getDataFolder()
-                .getAbsolutePath()
+        val path = (plugin
+            .dataFolder
+            .absolutePath
                 + File.separator
-                + filePath.replaceAll("\\|/", File.separator);
+                + filePath.replace("\\|/".toRegex(), File.separator))
 
         // ファイルを変数へ代入
-        configFile = new File(path);
+        file = File(path)
 
         // デフォルトコンフィグの配置
-        saveDefaultConfig();
+        saveDefaultConfig()
 
         // 存在しない場合、ファイルを初期化
-        if (!configFile.exists()) {
-            configFile.getParentFile().mkdirs();
-            configFile.createNewFile();
+        if (!file.exists()) {
+            file.getParentFile().mkdirs()
+            file.createNewFile()
         }
 
         // コンフィグをロード
         try {
-            this.load(configFile);
-        } catch (Exception e) {
-            System.out.println(filePath + " ファイルのロードに失敗しました。原因: " + e.toString());
-            return;
+            this.load(file)
+        } catch (e: java.lang.Exception) {
+            println("$filePath ファイルのロードに失敗しました。原因: $e")
+            return
         }
 
         // デフォルトセクションの設定
-        saveDefaultSection();
-
-        // ロード完了フラグ
-        isLoaded = true;
-
-        // 自動リロード
-        if (!isAutoReload) return;
+        if (isLoadDefaultSection) saveDefaultSection()
 
         // 自動リロード用ハンドル
-        ConfigUtils configUtils = this;
-        new BukkitRunnable() {
-            @Override
-            public void run() {
+        val configUtils = this
+        object : BukkitRunnable() { override fun run() {
 
-                long lastModified = configFile.lastModified();
-                if (fileModifiedHistory != lastModified) {
-                    try {
-                        reloadConfig();
-                        Bukkit.getScheduler().runTask(plugin, () -> {
-                            Bukkit.getPluginManager().callEvent(new ConfigReloadEvent(configUtils));
-                        });
-                    } catch (IOException | InvalidConfigurationException ignored) {}
-                }
+            // 自動リロード
+            if (!isAutoReload) return
+
+            val lastModified: Long = file.lastModified()
+            if (fileModifiedHistory != lastModified) {
+                try {
+                    reloadConfig()
+                    Bukkit.getScheduler().runTask(plugin, Runnable {
+                        Bukkit.getPluginManager().callEvent(ConfigReloadEvent(configUtils))
+                    })
+                } catch (ignored: IOException) {
+                } catch (ignored: InvalidConfigurationException) {}
             }
+        }}.runTaskTimerAsynchronously(plugin, 0L, 20L)
 
-        }.runTaskTimerAsynchronously(plugin, 0L, 20L);
+        // ロード完了フラグ
+        isLoaded = true
     }
 
-    /**
-     * ファイルを取得
-     * @return File
-     */
-    public File getFile() { return this.configFile; }
 
-    @Override
-    public void set(String path, @Nullable Object value) {
-        super.set(path, value);
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Bukkit.getPluginManager().callEvent(new ConfigSetEvent(this));
-        });
+    override fun set(path: String, value: Any?) {
+        super.set(path, value)
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            Bukkit.getPluginManager().callEvent(ConfigSetEvent(this))
+        })
     }
 
     /**
      * 変更内容を保存します
      * @throws IOException
      */
-    public ConfigUtils saveConfig() throws IOException {
-        this.save(configFile);
-        ConfigUtils configUtils = this;
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            Bukkit.getPluginManager().callEvent(new ConfigSaveEvent(configUtils));
-        });
-        return this;
+    @Throws(IOException::class)
+    fun saveConfig(): ConfigUtils {
+        this.save(file)
+        val configUtils = this
+        Bukkit.getScheduler().runTask(plugin, Runnable {
+            Bukkit.getPluginManager().callEvent(ConfigSaveEvent(configUtils))
+        })
+        return this
     }
 
     /**
      * 自動リロード用処理を実装した、Resourcesのコンフィグファイル出力メソッド
      */
-    public void saveDefaultConfig() {
-        if (configFile.exists()) return;
+    fun saveDefaultConfig() {
+        if (file.exists()) return
         try {
-            plugin.saveResource(configFile.getName(), false);
-            resetFileModifiedHistory();
-            Bukkit.getScheduler().runTask(plugin, () -> {
-                Bukkit.getPluginManager().callEvent(new ConfigSaveDefaultEvent(this));
-            });
-        } catch (IllegalArgumentException ignored) {}
+            plugin.saveResource(file.name, false)
+            resetFileModifiedHistory()
+            Bukkit.getScheduler().runTask(plugin, Runnable {
+                Bukkit.getPluginManager().callEvent(ConfigSaveDefaultEvent(this))
+            })
+        } catch (ignored: IllegalArgumentException) {
+        }
     }
 
     /**
      * 設定されていないセクションを新たに追加
      * @throws IOException
      */
-    public void saveDefaultSection() throws IOException {
+    @Throws(IOException::class)
+    fun saveDefaultSection() {
 
         // resourcesのファイル読み取り
-        InputStream is = plugin.getResource(configFile.getName());
-        if (is == null) return;
+        val resource = plugin.getResource(file.name) ?: return
 
         // YamlConfiguration を生成
-        InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
-        YamlConfiguration yamlConf = YamlConfiguration.loadConfiguration(isr);
-        Set<String> keys = yamlConf.getKeys(true);
+        val isr = InputStreamReader(resource, StandardCharsets.UTF_8)
+        val yamlConf = loadConfiguration(isr)
+        val keys = yamlConf.getKeys(true)
 
         // 全キーを処理
-        keys.forEach(k -> {
-            List<String> comments = yamlConf.getComments(k);
-            List<String> inlineComments = yamlConf.getInlineComments(k);
-            Object obj = yamlConf.get(k);
+        keys.forEach { k ->
+            val comments = yamlConf.getComments(k)
+            val inlineComments = yamlConf.getInlineComments(k)
+            val obj = yamlConf[k]!!
 
             // resources ファイルとの差分を抽出
             if (!isConfigurationSection(k) && !isSet(k)) {
-                this.setComments(k, comments);
-                this.set(k, obj);
-                this.setInlineComments(k, inlineComments);
+                this.setComments(k, comments)
+                this[k] = obj
+                this.setInlineComments(k, inlineComments)
             }
-        });
+        }
 
         // 保存
-        this.saveConfig();
+        this.saveConfig()
     }
 
     /**
@@ -176,9 +200,10 @@ public class ConfigUtils extends YamlConfiguration {
      * @throws IOException
      * @throws InvalidConfigurationException
      */
-    public void reloadConfig() throws IOException, InvalidConfigurationException {
-        this.load(configFile);
-        resetFileModifiedHistory();
+    @Throws(IOException::class, InvalidConfigurationException::class)
+    fun reloadConfig() {
+        this.load(file)
+        resetFileModifiedHistory()
     }
 
     /**
@@ -186,10 +211,10 @@ public class ConfigUtils extends YamlConfiguration {
      * @param file
      * @throws IOException
      */
-    @Override
-    public void save(File file) throws IOException {
-        super.save(file);
-        resetFileModifiedHistory();
+    @Throws(IOException::class)
+    override fun save(file: File) {
+        super.save(file)
+        resetFileModifiedHistory()
     }
 
     /**
@@ -197,10 +222,10 @@ public class ConfigUtils extends YamlConfiguration {
      * @param file
      * @throws IOException
      */
-    @Override
-    public void save(String file) throws IOException {
-        super.save(file);
-        resetFileModifiedHistory();
+    @Throws(IOException::class)
+    override fun save(file: String) {
+        super.save(file)
+        resetFileModifiedHistory()
     }
 
     /**
@@ -209,18 +234,18 @@ public class ConfigUtils extends YamlConfiguration {
      * @throws IOException
      * @throws InvalidConfigurationException
      */
-    @Override
-    public void load(@NotNull File file) throws IOException, InvalidConfigurationException {
-
+    @Throws(IOException::class, InvalidConfigurationException::class)
+    override fun load(file: File) {
         // コンフィグファイルを設定
-        resetFileModifiedHistory();
-        this.configFile = file;
+
+        resetFileModifiedHistory()
+        this.file = file
 
         // コンフィグをロード
         try {
-            super.load(configFile);
-        } catch (Exception e) {
-            System.out.println(file.getName() + " ファイルのロードに失敗しました。原因: " + e);
+            super.load(this.file)
+        } catch (e: Exception) {
+            println(file.name + " ファイルのロードに失敗しました。原因: " + e)
         }
     }
 
@@ -230,28 +255,321 @@ public class ConfigUtils extends YamlConfiguration {
      * @throws IOException
      * @throws InvalidConfigurationException
      */
-    @Override
-    public void load(@NotNull String filePath) throws IOException, InvalidConfigurationException {
-
+    @Throws(IOException::class, InvalidConfigurationException::class)
+    override fun load(filePath: String) {
         // ファイルパスを生成
-        String path = plugin
-                .getDataFolder()
-                .getAbsolutePath()
+
+        val path = (plugin
+            .dataFolder
+            .absolutePath
                 + File.separator
-                + filePath.replaceAll("\\|/", File.separator);
+                + filePath.replace("\\|/".toRegex(), File.separator))
 
         // ファイルを変数へ代入
-        File file = new File(path);
+        val file = File(path)
 
         // 読み込み
-        this.load(file);
+        this.load(file)
     }
 
     /**
      * ファイル更新履歴をリセット
      */
-    public void resetFileModifiedHistory() {
-        fileModifiedHistory = configFile.lastModified();
+    fun resetFileModifiedHistory() {
+        fileModifiedHistory = file.lastModified()
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    private fun onPluginDisableEvent(event: PluginDisableEvent) {
+        if (event.plugin != plugin) return
+        if (savedClass != null) syncConfigBetweenClass(savedClass, true)
+    }
+
+    @EventHandler
+    private fun onConfigReloadEvent(event: ConfigReloadEvent) {
+
+        // 自動リロード
+        if (!isAutoReload) return
+
+        syncConfigBetweenClass(savedClass)
+        replaceSpaces(this)
+    }
+
+    private fun classMonitor() {
+        object : BukkitRunnable() { override fun run() {
+
+            if (savedClass != null) syncConfigBetweenClass(savedClass, true)
+        }}.runTaskTimerAsynchronously(plugin, 0, classCheckInterval.toLong())
+    }
+
+    /**
+     * 監視するクラスを登録
+     */
+    fun <T> registerClass(anyClass: T) : T? {
+        val result = syncConfigBetweenClass(anyClass) ?: return null
+        replaceSpaces(this)
+        savedClass = result
+        return result
+    }
+
+    companion object {
+        private val serializers = ArrayList<Pair<Class<*>, ConfigSerializer<*>>>()
+    }
+
+    fun <T> registerSerializer(serializer: ConfigSerializer<*>) : Boolean {
+        val type = serializer::class.java.componentType
+        if (serializers.any { it.first == type }) return false
+        return serializers.add(Pair(type, serializer))
+    }
+
+    fun getSerializer(clazz: Class<*>) : ConfigSerializer<*>? = serializers.find { it.first == clazz }?.second
+
+    /**
+     * コンフィグ <-> クラス 間の変換
+     */
+    fun <T> syncConfigBetweenClass(anyClass: T, isReverse: Boolean = false) : T? {
+
+        var isSaveConfig = false
+        val conf = this@ConfigUtils
+
+        // スーパークラスの情報を取得
+        val anyClazz = (anyClass ?: return null)::class.java
+        val classes = arrayListOf(Triple<String, Any, Field?>("", anyClass as Any, null))
+
+        // コンフィグスペース
+        val configSpace = runCatching { anyClazz.getAnnotation(ConfigSpace::class.java) }.getOrNull()
+
+        // ヘッダー
+        val headerComment = runCatching { anyClazz.getAnnotation(HeaderComment::class.java) }.getOrNull()
+        val headerSpaceSize = headerComment?.spaceSize ?: configSpace?.classSpaceSize ?: 2
+        val headerSpaceList = (1..headerSpaceSize).map { "#SPACE#" }.toTypedArray()
+        headerComment?.run { this@ConfigUtils.options().setHeader(listOf(*headerSpaceList, *this.message)) }
+
+        // フッター
+        val footerComment = runCatching { anyClazz.getAnnotation(FooterComment::class.java) }.getOrNull()
+        val footerSpaceSize = footerComment?.spaceSize ?: configSpace?.classSpaceSize ?: 1
+        val footerSpaceList = (1..footerSpaceSize).map { "#SPACE#" }.toTypedArray()
+        footerComment?.run { this@ConfigUtils.options().setFooter(listOf(*footerSpaceList, *this.message)) }
+
+        val sectionNameCache = HashMap<String, String>()
+        val deletePathQueue = ArrayList<String>()
+        while (classes.size > 0) {
+
+            // クラスの情報復元
+            val lastKeyClass = classes.removeLastOrNull() ?: break
+            var classSection = lastKeyClass.first
+            val classInstance = lastKeyClass.second
+            val parentField = lastKeyClass.third
+            val clazz = classInstance::class.java
+
+            // クラスのアノテーションを取得
+            val classSectionName = runCatching { clazz.getAnnotation(SectionName::class.java) }.getOrNull()
+            val classComment = runCatching { clazz.getAnnotation(Comment::class.java) }.getOrNull()
+            val classInlineComment = runCatching { clazz.getAnnotation(InlineComment::class.java) }.getOrNull()
+            val classSpace = runCatching { clazz.getAnnotation(Space::class.java) }.getOrNull()
+            val classCopy = runCatching { clazz.getAnnotation(Copy::class.java) }.getOrNull()
+            val classDelete = runCatching { clazz.getAnnotation(Delete::class.java) }.getOrNull()
+            val classPathMapping = runCatching { clazz.getAnnotation(PathMapping::class.java) }.getOrNull()
+
+            // ペアレントクラスのアノテーションを取得
+            val parentComment = runCatching { parentField?.getAnnotation(Comment::class.java) }.getOrNull()
+            val parentInlineComment = runCatching { parentField?.getAnnotation(InlineComment::class.java) }.getOrNull()
+            val parentSpace = runCatching { parentField?.getAnnotation(Space::class.java) }.getOrNull()
+            val parentCopy = runCatching { parentField?.getAnnotation(Copy::class.java) }.getOrNull()
+            val parentPathMapping = runCatching { parentField?.getAnnotation(PathMapping::class.java) }.getOrNull()
+
+            // クラスセクションパスを改ざん (@SectionName)
+            if (classSectionName != null) classSection = classSectionName.path
+
+            // 削除キュー追加
+            if (classDelete != null) {
+                deletePathQueue.add(classSection)
+                continue
+            }
+
+            // フィールドコピー (オブジェクトコピー)
+            if (parentCopy != null) {
+                val fromPath = sectionNameCache[parentCopy.fromPath] ?: parentCopy.fromPath
+
+                val getObj = conf.get(fromPath)
+                val getComments = conf.getComments(fromPath)
+                val getInlineComments = conf.getInlineComments(fromPath)
+
+                val configSpaceSize = parentSpace?.size ?: configSpace?.fieldSpaceSize ?: 1
+                val spaceList = (1..configSpaceSize).map { "#SPACE#" }.toTypedArray()
+
+                if (!conf.isConfigurationSection(classSection)) conf.set(classSection, getObj)
+                if (conf.getComments(classSection).filterNotNull().none { it != "#SPACE#" }) conf.setComments(
+                    classSection,
+                    listOf(*spaceList, *(parentComment?.message ?: getComments.toTypedArray()))
+                )
+//                if (conf.getInlineComments(classSection).filterNotNull().none { it != "#SPACE#" }) conf.setInlineComments(classSection, parentInlineComment?.message?.toList() ?: getInlineComments ?: listOf())
+                // f.set(classInstance, getObj)
+            }
+
+            // レベルが高い順に上から並び替える
+            val fields = clazz.declaredFields
+                .sortedByDescending { f -> runCatching { f.getAnnotation(Weight::class.java)?.weight }.getOrElse { 2147483647 } }
+
+            // フィールドをループ
+            fields.forEach { f ->
+
+                // フィールドのアノテーションを取得
+                val fieldSectionName = runCatching { f.getAnnotation(SectionName::class.java) }.getOrNull()
+                val fieldComment = runCatching { f.getAnnotation(Comment::class.java) }.getOrNull()
+                val fieldInlineComment = runCatching { f.getAnnotation(InlineComment::class.java) }.getOrNull()
+                val fieldSpace = runCatching { f.getAnnotation(Space::class.java) }.getOrNull()
+                val fieldCopy = runCatching { f.getAnnotation(Copy::class.java) }.getOrNull()
+                val fieldDelete = runCatching { f.getAnnotation(Delete::class.java) }.getOrNull()
+
+                // フィールドの情報取得
+                f.isAccessible = true
+                val fieldName = f.name
+                var section = "${classSection}${if (classSection.isNotBlank()) "." else ""}$fieldName"
+                val obj = f.get(classInstance)
+
+                // セクション保存
+                if (fieldSectionName != null) sectionNameCache[section] = fieldSectionName.path
+
+                // パスマッピング
+                if (parentPathMapping != null)
+                    section = section.replace("(?:^|\\.)${parentPathMapping.onlyUseArgumentPath}".toRegex(RegexOption.IGNORE_CASE), "")
+                else if (classPathMapping != null)
+                    section = section.replace("(?:^|\\.)${classPathMapping.onlyUseArgumentPath}".toRegex(RegexOption.IGNORE_CASE), "")
+
+                // 削除キュー追加
+                if (fieldDelete != null) {
+                    deletePathQueue.add(section)
+                    return@forEach
+                }
+
+                // クラス内クラスを処理待機配列に追加
+                if (f.type.isAnnotationPresent(SubConfig::class.java)) {
+
+                    // セクション名を強制変更
+                    if (fieldSectionName != null && fieldSectionName.path.isNotBlank()) {
+                        section = section.replace("(.*(?:^|\\.))(.*?)\$".toRegex(), "$1${fieldSectionName.path}")
+                    }
+
+                    // 処理クラス配列に追加
+                    classes.add(Triple(section, obj, f))
+
+                    // 処理スキップ
+                    return@forEach
+                }
+
+                // クラスコピー (セクションコピー)
+                if (classCopy != null && conf.isConfigurationSection(classCopy.fromPath) && !conf.isSet(classSection)) {
+                    val fromPath = sectionNameCache[classCopy.fromPath] ?: classCopy.fromPath
+
+                    val getSection = conf.getConfigurationSection(fromPath)
+                    val getObj = conf.get(fromPath)
+                    val getComments = conf.getComments(fromPath)
+                    val getInlineComments = conf.getInlineComments(fromPath)
+
+                    conf.createSection(classSection, getSection?.getValues(true) ?: mapOf<String, Any>())
+                    if (conf.getComments(classSection).filterNotNull().none { it != "#SPACE#" })
+                        conf.setComments(classSection, getComments)
+                    if (conf.getComments(classSection).filterNotNull().none { it != "#SPACE#" })
+                        conf.setInlineComments(classSection, getInlineComments)
+                }
+
+                if (!conf.isSet(section)) {
+
+                    // セクション生成
+                    if (!conf.isConfigurationSection(classSection)) conf.createSection(classSection)
+
+                    // デフォルト値 設定
+                    conf.set(section, obj)
+
+                    // フィールドのコメントを設定する
+                    val fieldSpaceSize = fieldSpace?.size ?: configSpace?.fieldSpaceSize ?: 1
+                    val spaceList = (1..fieldSpaceSize).map { "#SPACE#" }.toTypedArray()
+                    if (conf.getComments(section).filterNotNull().none { it != "#SPACE#" })
+                        conf.setComments(section, listOf(*spaceList, *fieldComment?.message ?: arrayOf()))
+                    if (conf.getInlineComments(section).filterNotNull().none { it != "#SPACE#" })
+                        conf.setInlineComments(section, fieldInlineComment?.message?.toList() ?: listOf())
+                }
+
+                // コンフィグからクラスへ代入
+                if (!isReverse) {
+
+                    val getObj = conf.get(section)
+                    if (getObj != null) {
+                        val result = runCatching { f.set(classInstance, getObj) }
+                        if (result.isFailure)
+                            println((section + "の代入失敗。データ型は正常ですか? エラー内容:" + (result.exceptionOrNull()?.message ?: "")))
+                    }
+
+                    // コンフィグ保存
+                    isSaveConfig = true
+
+                } else { // クラスからコンフィグへ代入
+                    val getObj = f.get(classInstance)
+                    if (getObj != null) {
+                        val result = runCatching { conf.set(section, getObj) }
+                        if (result.isFailure)
+                            println((section + "の保存失敗。データ型は正常ですか? エラー内容:" + (result.exceptionOrNull()?.message ?: "")))
+                        else // コンフィグ保存
+                            isSaveConfig = true
+                    }
+                }
+            }
+
+            // コメントアウトを最後に挿入 (先に挿入すると反映されないバグに対処)
+            val lastClassComment = mutableListOf<String>()
+            val lastClassInlineComment = mutableListOf<String>()
+
+            val commentSpaceSize = parentSpace?.size ?: classSpace?.size ?: configSpace?.classSpaceSize ?: 1
+            val commentSpaceList = (1..commentSpaceSize).map { "#SPACE#" }.toTypedArray()
+            lastClassComment.addAll(commentSpaceList)
+            lastClassComment.addAll(parentComment?.message ?: arrayOf())
+            lastClassComment.addAll(classComment?.message ?: arrayOf())
+
+            lastClassInlineComment.addAll(parentInlineComment?.message ?: arrayOf())
+            lastClassInlineComment.addAll(classInlineComment?.message ?: arrayOf())
+
+            if (conf.getComments(classSection).filterNotNull().none { it != "#SPACE#" })
+                conf.setComments(classSection, lastClassComment)
+
+            if (conf.getInlineComments(classSection).filterNotNull().none { it != "#SPACE#" })
+                conf.setInlineComments(classSection, lastClassInlineComment)
+        }
+
+        // 削除キュー
+        deletePathQueue.forEach { path ->
+            val convertPath = sectionNameCache[path] ?: path
+            conf.set(convertPath, null)
+            conf.setComments(convertPath, null)
+            conf.setInlineComments(convertPath, null)
+        }
+
+        // 保存
+        if (isSaveConfig) {
+            conf.saveConfig()
+            replaceSpaces(this@ConfigUtils)
+        }
+        return anyClass
+    }
+
+    /**
+     * スペース特殊文字を空白文字に置き換える
+     */
+    fun replaceSpaces(conf: ConfigUtils) {
+
+        val yamlFile = conf.file
+        val text = yamlFile.readText()
+        val lines = text
+            .split("\n")
+            .map {
+                it.replace("(?: +|)# #SPACE#.*\$".toRegex(), "")
+            }
+
+        // 書き込み
+        yamlFile.writeText(lines.joinToString("\n").trimEnd('\n'))
+
+        // リセット
+        conf.resetFileModifiedHistory()
     }
 
 }
