@@ -1,4 +1,4 @@
-package com.github.hiyuuu.blind.conf.samples
+package com.github.hiyuuu.config.samples
 
 import com.github.hiyuuu.config.annotations.PathMapping
 import com.github.hiyuuu.config.annotations.SubConfig
