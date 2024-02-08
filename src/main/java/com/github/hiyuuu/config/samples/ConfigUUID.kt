@@ -3,7 +3,7 @@ package com.github.hiyuuu.blind.conf.samples
 import com.github.hiyuuu.config.annotations.PathMapping
 import com.github.hiyuuu.config.annotations.SubConfig
 import org.bukkit.configuration.serialization.ConfigurationSerializable
-import java.util.UUID
+import java.util.*
 
 @SubConfig
 @PathMapping("uuid")

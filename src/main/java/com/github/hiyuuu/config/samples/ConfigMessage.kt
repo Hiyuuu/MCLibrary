@@ -9,31 +9,39 @@ import org.bukkit.entity.Player
 @SubConfig
 @PathMapping("message")
 class ConfigMessage(
-    @Comment("メッセージ")
-    var message : String
+    @Comment("メッセージ") var message : String
 ) {
+
+    fun send(player: Player, vararg replaceWith: String = arrayOf()) = player.sendMessage(coloredMessage().replaceWith(*replaceWith))
+
+    fun broadCast(vararg replaceWith: String = arrayOf()) = Bukkit.broadcastMessage(coloredMessage().replaceWith(*replaceWith))
+
+    fun print(vararg replaceWith: String = arrayOf()) = System.out.print(noColoredMessage().replaceWith(*replaceWith))
+
+    fun println(vararg replaceWith: String = arrayOf()) = System.out.println(noColoredMessage().replaceWith(*replaceWith))
+
+    fun warning(vararg replaceWith: String = arrayOf()) = Bukkit.getLogger().warning(coloredMessage().replaceWith(*replaceWith))
+
+    fun info(vararg replaceWith: String = arrayOf()) = Bukkit.getLogger().info(coloredMessage().replaceWith(*replaceWith))
+
+    fun fine(vararg replaceWith: String = arrayOf()) = Bukkit.getLogger().fine(coloredMessage().replaceWith(*replaceWith))
 
     private fun coloredMessage() = message.replace("&|＆".toRegex(), "§")
     private fun noColoredMessage() = message.replace("[&|＆][A-FIK-O0-9]".toRegex(RegexOption.IGNORE_CASE), "")
+    private fun String.replaceWith(vararg replaceWith: String) : String {
 
-    fun String.send(player: Player) = player.sendMessage(this)
+        var message = this
+        var count = 0
+        while (true) {
 
-    fun send(player: Player, vararg replaceWith: String) {
-        player.sendMessage(coloredMessage())
+            val key = replaceWith.getOrNull(count) ?: break
+            val value = replaceWith.getOrNull(count + 1) ?: break
+
+            message = message.replace(key, value)
+            count += 2
+        }
+
+        return message
     }
-
-    fun broadCast() = Bukkit.broadcastMessage(coloredMessage())
-
-    fun print() = print(noColoredMessage())
-
-    fun println() = print(noColoredMessage())
-
-    fun warning() = Bukkit.getLogger().warning(coloredMessage())
-
-    fun info() = Bukkit.getLogger().info(coloredMessage())
-
-    fun fine() = Bukkit.getLogger().fine(coloredMessage())
-
-    fun config() = Bukkit.getLogger().config(coloredMessage())
 
 }
