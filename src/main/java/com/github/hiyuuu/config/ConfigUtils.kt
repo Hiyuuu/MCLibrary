@@ -5,9 +5,14 @@ import com.github.hiyuuu.config.events.ConfigReloadEvent
 import com.github.hiyuuu.config.events.ConfigSaveDefaultEvent
 import com.github.hiyuuu.config.events.ConfigSaveEvent
 import com.github.hiyuuu.config.events.ConfigSetEvent
+import com.github.hiyuuu.config.samples.ConfigLocation
+import com.github.hiyuuu.config.samples.ConfigMessage
+import com.github.hiyuuu.config.samples.ConfigSound
+import com.github.hiyuuu.config.samples.ConfigUUID
 import org.bukkit.Bukkit
 import org.bukkit.configuration.InvalidConfigurationException
 import org.bukkit.configuration.file.YamlConfiguration
+import org.bukkit.configuration.serialization.ConfigurationSerialization
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
@@ -57,6 +62,8 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
         this.initialize()
         this.registerClass(classInstance)
         this.classMonitor()
+
+        ConfigurationSerialization.registerClass(ConfigUUID::class.java, "ConfigUUID")
         Bukkit.getPluginManager().registerEvents(this, plugin)
     }
 
