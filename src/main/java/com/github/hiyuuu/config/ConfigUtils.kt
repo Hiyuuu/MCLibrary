@@ -119,7 +119,6 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
                     reloadConfig()
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         Bukkit.getPluginManager().callEvent(ConfigReloadEvent(configUtils))
-                        Bukkit.broadcastMessage(fileModifiedHistory.toString() + " vs " + lastModified)
                     })
                 } catch (ignored: IOException) {
                 } catch (ignored: InvalidConfigurationException) {}
@@ -296,6 +295,9 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
 
         // 自動リロード
         if (!isAutoReload) return
+
+        // クラスが登録されていない場合は終了
+        if (savedClass == null) return
 
         syncConfigBetweenClass(savedClass)
         replaceSpaces(this)
