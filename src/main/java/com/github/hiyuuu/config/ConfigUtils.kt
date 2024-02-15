@@ -114,12 +114,14 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
             if (!isAutoReload) return
 
             val lastModified: Long = file.lastModified()
+            Bukkit.broadcastMessage("${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
             if (fileModifiedHistory != lastModified) {
                 try {
                     reloadConfig()
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         Bukkit.getPluginManager().callEvent(ConfigReloadEvent(configUtils))
                     })
+                    Bukkit.broadcastMessage("RELOADED! ${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
                 } catch (ignored: IOException) {
                 } catch (ignored: InvalidConfigurationException) {}
             }
@@ -297,7 +299,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
         if (!isAutoReload) return
 
         // クラスが登録されていない場合は終了
-        if (savedClass == null) return
+        if (false && savedClass == null) return
 
         syncConfigBetweenClass(savedClass)
         replaceSpaces(this)
