@@ -136,7 +136,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
             if (!isAutoReload) return
 
             val lastModified: Long = file.lastModified()
-            // Bukkit.broadcastMessage("${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
+             Bukkit.broadcastMessage("${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
             if (fileModifiedHistory != lastModified) {
                 try {
                     reloadConfig()
@@ -144,7 +144,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
                         Bukkit.getPluginManager().callEvent(ConfigReloadEvent(configUtils))
                     })
                     resetFileModifiedHistory()
-                    // Bukkit.broadcastMessage("RELOADED! ${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
+                     Bukkit.broadcastMessage("RELOADED! ${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
                 } catch (ignored: IOException) {
                 } catch (ignored: InvalidConfigurationException) {}
             }
