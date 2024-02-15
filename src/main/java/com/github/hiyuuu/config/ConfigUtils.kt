@@ -43,7 +43,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
     var isLoadDefaultSection = true
     var savedClass : Any? = null
     var classCheckInterval = 100
-    private var fileModifiedHistory = 0L
+    var fileModifiedHistory = 0L
 
     constructor(plugin: Plugin, filePath: String, isAutoReload: Boolean = true, isLoadDefaultSection: Boolean = true) : this(plugin) {
         this.plugin = plugin
@@ -119,6 +119,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
                     reloadConfig()
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         Bukkit.getPluginManager().callEvent(ConfigReloadEvent(configUtils))
+                        Bukkit.broadcastMessage(fileModifiedHistory.toString() + " vs " + lastModified)
                     })
                 } catch (ignored: IOException) {
                 } catch (ignored: InvalidConfigurationException) {}
