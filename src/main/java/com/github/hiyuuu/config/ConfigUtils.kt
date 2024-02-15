@@ -13,18 +13,23 @@ import org.bukkit.Bukkit
 import org.bukkit.configuration.InvalidConfigurationException
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.configuration.serialization.ConfigurationSerialization
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.EventPriority
 import org.bukkit.event.Listener
+import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.event.server.PluginDisableEvent
 import org.bukkit.plugin.Plugin
 import org.bukkit.scheduler.BukkitRunnable
+import org.bukkit.scheduler.BukkitTask
 import java.io.File
 import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.reflect.Field
 import java.nio.charset.StandardCharsets
 import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
 
 
 /**
@@ -32,18 +37,35 @@ import java.util.*
  */
 class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
 
+    companion object {
+        private val serializers = ArrayList<Pair<Class<*>, ConfigSerializer<*>>>()
+    }
+
     /**
      * ファイルを取得
      * @return File
      */
     lateinit var filePath: String
+    var player : Player? = null
     var file = File(plugin.dataFolder.parentFile, "config.yml")
     var isLoaded = false
     var isAutoReload: Boolean = true
     var isLoadDefaultSection = true
+    var reloadListener : BukkitTask? = null
     var savedClass : Any? = null
     var classCheckInterval = 100
     var fileModifiedHistory = 0L
+    var fileReloadInterval = 20
+
+    constructor(plugin: Plugin, player: Player, filePath: String, isAutoReload: Boolean = true, isLoadDefaultSection: Boolean = true) : this(plugin) {
+        this.plugin = plugin
+        this.player = player
+        this.filePath = filePath
+        this.isAutoReload = isAutoReload
+        this.isLoadDefaultSection = isLoadDefaultSection
+        this.initialize()
+        Bukkit.getPluginManager().registerEvents(this, plugin)
+    }
 
     constructor(plugin: Plugin, filePath: String, isAutoReload: Boolean = true, isLoadDefaultSection: Boolean = true) : this(plugin) {
         this.plugin = plugin
@@ -108,23 +130,25 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
 
         // 自動リロード用ハンドル
         val configUtils = this
-        object : BukkitRunnable() { override fun run() {
+        reloadListener = object : BukkitRunnable() { override fun run() {
 
             // 自動リロード
             if (!isAutoReload) return
 
             val lastModified: Long = file.lastModified()
+            // Bukkit.broadcastMessage("${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
             if (fileModifiedHistory != lastModified) {
                 try {
                     reloadConfig()
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         Bukkit.getPluginManager().callEvent(ConfigReloadEvent(configUtils))
-                        Bukkit.broadcastMessage(fileModifiedHistory.toString() + " vs " + lastModified)
                     })
+                    resetFileModifiedHistory()
+                    // Bukkit.broadcastMessage("RELOADED! ${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
                 } catch (ignored: IOException) {
                 } catch (ignored: InvalidConfigurationException) {}
             }
-        }}.runTaskTimerAsynchronously(plugin, 0L, 20L)
+        }}.runTaskTimerAsynchronously(plugin, 0L, fileReloadInterval.toLong())
 
         // ロード完了フラグ
         isLoaded = true
@@ -285,6 +309,17 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
         fileModifiedHistory = file.lastModified()
     }
 
+    /**
+     * リスナーを停止
+     */
+    fun destroyListener() = reloadListener?.cancel()
+
+    @EventHandler
+    private fun onPlayerQuitEvent(event: PlayerQuitEvent) {
+        if (player == null) return
+        if (player?.uniqueId == event.player.uniqueId) destroyListener()
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     private fun onPluginDisableEvent(event: PluginDisableEvent) {
         if (event.plugin != plugin) return
@@ -296,6 +331,9 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
 
         // 自動リロード
         if (!isAutoReload) return
+
+        // クラスが登録されていない場合は終了
+        if (savedClass == null) return
 
         syncConfigBetweenClass(savedClass)
         replaceSpaces(this)
@@ -316,10 +354,6 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
         replaceSpaces(this)
         savedClass = result
         return result
-    }
-
-    companion object {
-        private val serializers = ArrayList<Pair<Class<*>, ConfigSerializer<*>>>()
     }
 
     fun <T> registerSerializer(serializer: ConfigSerializer<*>) : Boolean {
