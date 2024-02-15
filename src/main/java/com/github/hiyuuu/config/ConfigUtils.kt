@@ -44,6 +44,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
     var savedClass : Any? = null
     var classCheckInterval = 100
     var fileModifiedHistory = 0L
+    var fileReloadInterval = 20
 
     constructor(plugin: Plugin, filePath: String, isAutoReload: Boolean = true, isLoadDefaultSection: Boolean = true) : this(plugin) {
         this.plugin = plugin
@@ -121,11 +122,12 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
                     Bukkit.getScheduler().runTask(plugin, Runnable {
                         Bukkit.getPluginManager().callEvent(ConfigReloadEvent(configUtils))
                     })
+                    resetFileModifiedHistory()
                     Bukkit.broadcastMessage("RELOADED! ${fileModifiedHistory} vs ${lastModified} (${configUtils.filePath})")
                 } catch (ignored: IOException) {
                 } catch (ignored: InvalidConfigurationException) {}
             }
-        }}.runTaskTimerAsynchronously(plugin, 0L, 20L)
+        }}.runTaskTimerAsynchronously(plugin, 0L, fileReloadInterval.toLong())
 
         // ロード完了フラグ
         isLoaded = true
@@ -299,7 +301,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
         if (!isAutoReload) return
 
         // クラスが登録されていない場合は終了
-        if (false && savedClass == null) return
+        if (savedClass == null) return
 
         syncConfigBetweenClass(savedClass)
         replaceSpaces(this)
