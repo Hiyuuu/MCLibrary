@@ -36,9 +36,9 @@ jobs:
     - name: build.gradle の変数取得
       id: set_variable
       run: |
-        echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> "$GITHUB_OUTPUT"
-        echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> "$GITHUB_OUTPUT"
-        echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> "$GITHUB_OUTPUT"
+        echo "name=$(gradle -q properties | grep -oP '^name:\s*\K.*')" >> $GITHUB_ENV
+        echo "version=$(gradle -q properties | grep -oP '^version:\s*\K.*')" >> $GITHUB_ENV
+        echo "group=$(gradle -q properties | grep -oP '^group:\s*\K.*')" >> $GITHUB_ENV
     - name: Gradle-ShadowJar でアーティファクトをビルド
       run: ./gradlew shadowjar
     - name: リリースタグ形式を設定
@@ -68,5 +68,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ./${{ github.event.repository.name }}.jar
-        asset_name: ${{ github.event.repository.name }}.jar
+        asset_name: ${{ github.event.repository.name }}-${{ env.version }}.jar
         asset_content_type: application/zip
