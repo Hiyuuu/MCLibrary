@@ -47,5 +47,13 @@ dependencies {
 
 }
 
-compileKotlin.kotlinOptions.jvmTarget = '1.8'
+shadowJar {
+    archiveFileName.set("../../${project.name}.jar")
+    minimize()
+}
+
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+java.sourceCompatibility = JavaVersion.VERSION_17
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+    kotlinOptions.jvmTarget = "17"
+}
