@@ -398,7 +398,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
             // クラスの情報復元
             val lastKeyClass = classes.removeLastOrNull() ?: break
             var classSection = lastKeyClass.first
-            val classInstance = lastKeyClass.second
+            val classInstance = lastKeyClass.second ?: continue
             val parentField = lastKeyClass.third
             val clazz = classInstance::class.java
 
