@@ -186,7 +186,17 @@ class GUIMaker(
             = slotRange.forEach { slot -> onClickSlot(slot , itemStack, function) }
     fun onClickSlot(slots: List<Int>, itemStack: ItemStack, function: (Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit = { _, _, _, _ -> })
             = slots.forEach { slot -> onClickSlot(slot, itemStack, function)}
-    fun onClickSlotHollow(startSlot: Int, endSlot: Int, itemStack: ItemStack, function: (Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit = { _, _, _, _ -> }) {
+    fun onClickSlotHollow(startSlot: Int, endSlot: Int, itemStack: ItemStack, function: (Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit = { _, _, _, _ -> })
+        = getCornerSlot(startSlot, endSlot).getHollowSlots().forEach { s ->
+            onClickSlot(s, itemStack, function)
+        }
+
+    fun onClickSlotFill(startSlot: Int, endSlot: Int, itemStack: ItemStack, function: (Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit = { _, _, _, _ -> })
+        = getCornerSlot(startSlot, endSlot).getFillSlots().forEach { s ->
+            onClickSlot(s, itemStack, function)
+        }
+
+    fun getCornerSlot(startSlot: Int, endSlot: Int) : GUIMaker_CornerSlot {
 
         val minSlot = min(startSlot, endSlot)
         val maxSlot = max(startSlot, endSlot)
@@ -199,39 +209,7 @@ class GUIMaker(
         val upRight = upLeft + diffRightToLeft
         val downLeft = downRight - diffRightToLeft
 
-        onClickSlot(upLeft..upRight, itemStack, function)
-        onClickSlot(downLeft..downRight, itemStack, function)
-
-        val lines = (downLeft - upLeft) / 9 + 1
-        (1..lines).forEach { l ->
-            val line = (l - 1)
-
-            onClickSlot(upLeft + (9 * line), itemStack, function)
-            onClickSlot(upRight + (9 * line), itemStack, function)
-        }
-    }
-    fun onClickSlotFill(startSlot: Int, endSlot: Int, itemStack: ItemStack, function: (Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit = { _, _, _, _ -> }) {
-
-        val minSlot = min(startSlot, endSlot)
-        val maxSlot = max(startSlot, endSlot)
-        val minColumn = minSlot % 9
-        val maxColumn = maxSlot % 9
-
-        val upLeft = if (maxColumn > minColumn) minSlot else minSlot - (minColumn - maxColumn)
-        val downRight = if (maxColumn > minColumn) maxSlot else maxSlot + (minColumn - maxColumn)
-        val diffRightToLeft = (downRight % 9) - (upLeft % 9)
-        val upRight = upLeft + diffRightToLeft
-        val downLeft = downRight - diffRightToLeft
-
-        var line = 0
-        while (true) {
-            val startAt = upLeft + (9 * line)
-            if (startAt > downLeft) break
-
-            onClickSlot(startAt..(startAt + diffRightToLeft), itemStack, function)
-
-            line++
-        }
+        return GUIMaker_CornerSlot(upLeft, upRight, downLeft, downRight)
     }
 
     // 閉じる際
