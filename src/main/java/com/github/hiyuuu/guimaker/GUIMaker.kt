@@ -117,6 +117,7 @@ class GUIMaker(
     fun disableSaveGUI() : GUIMaker { GUI_sessionName = null ; return this }
 
     // GUI使用者
+    fun setAuthor(player: Player) : GUIMaker { GUI_viewer = player ; return this }
     fun getAuthor() : Player? = GUI_viewer
 
     // GUIインベントリ情報取得
