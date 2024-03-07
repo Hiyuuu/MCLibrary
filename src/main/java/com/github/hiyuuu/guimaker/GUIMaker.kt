@@ -47,7 +47,7 @@ class GUIMaker(
     // GUIデータ
     private val GUI_items = HashMap<Int, ItemStack>()
     private val GUI_functions = HashMap<Int, (Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit>()
-    private var GUI_hotbarSwap = HashMap<Int, (Player, ItemStack?, ItemStack?, Boolean, Int) -> Boolean>()
+    private val GUI_hotbarSwap = HashMap<Int, (Player, ItemStack?, ItemStack?, Boolean, Int) -> Boolean>()
 
     private val GUI_keyStructures = LinkedList<CharArray>()
     private val GUI_keyItems = HashMap<Char, ItemStack>()
@@ -56,7 +56,6 @@ class GUIMaker(
     private var GUI_closeFunction : (Player, Inventory) -> Unit = { _, _ -> }
     private var GUI_outsideFunction : (Player) -> Unit = { _ -> }
     private var GUI_sessionName : String? = null
-
 
     init {
 
@@ -124,6 +123,16 @@ class GUIMaker(
     fun getGUI() : Inventory = GUI
     fun getSlotItems() : List<ItemStack> = GUI_items.map { it.value }
     fun getSlotItem(slot: Int) : ItemStack? = GUI_items[slot]
+
+    fun getGUIItem(slot: Int) : ItemStack? = GUI_items[slot]
+
+    fun getGUIFunction(slot: Int) : ((Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit)? = GUI_functions[slot]
+
+    fun getGUIhotbarSwap(slot: Int) : ((Player, ItemStack?, ItemStack?, Boolean, Int) -> Boolean)? = GUI_hotbarSwap[slot]
+
+    fun getGUICloseFunction() : (Player, Inventory) -> Unit = GUI_closeFunction
+
+    fun getOutsideFunction() : (Player) -> Unit = GUI_outsideFunction
 
     // ホットバースワップを全有効
     fun setHotbarSwap(toggle: Boolean = true) : GUIMaker {
@@ -299,7 +308,6 @@ class GUIMaker(
                 if (slot++ >= GUI.size) return
                 val retrieveItem = GUI_keyItems[key] ?: return@forEach
                 val retrieveFunction = GUI_keyFunctions[key] ?: { _, _, _, _ -> }
-                println("A" + slot)
 
                 onClickSlot(slot, retrieveItem, retrieveFunction)
             }
