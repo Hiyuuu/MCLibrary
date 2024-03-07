@@ -124,11 +124,11 @@ class GUIMaker(
     fun getSlotItems() : List<ItemStack> = GUI_items.map { it.value }
     fun getSlotItem(slot: Int) : ItemStack? = GUI_items[slot]
 
-    fun getGUIFunction(slot: Int) : ((Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit)? = GUI_functions[slot]
+    fun getSlotFunction(slot: Int) : ((Player, ItemStack, ItemStack, GUIMaker_ClickType) -> Unit)? = GUI_functions[slot]
 
-    fun getGUIhotbarSwap(slot: Int) : ((Player, ItemStack?, ItemStack?, Boolean, Int) -> Boolean)? = GUI_hotbarSwap[slot]
+    fun getSlotHotbarSwap(slot: Int) : ((Player, ItemStack?, ItemStack?, Boolean, Int) -> Boolean)? = GUI_hotbarSwap[slot]
 
-    fun getGUICloseFunction() : (Player, Inventory) -> Unit = GUI_closeFunction
+    fun getCloseFunction() : (Player, Inventory) -> Unit = GUI_closeFunction
 
     fun getOutsideFunction() : (Player) -> Unit = GUI_outsideFunction
 
