@@ -132,6 +132,8 @@ class GUIMaker(
 
     fun getOutsideFunction() : (Player) -> Unit = GUI_outsideFunction
 
+    fun getRefreshFunction() : (GUIMaker) -> Unit = refreshFunction
+
     // ホットバースワップを全有効
     fun setHotbarSwap(toggle: Boolean = true) : GUIMaker {
         (0..8).forEach { slot -> setHotbarSwap(slot) { _, _, _, _, _ -> toggle } }
