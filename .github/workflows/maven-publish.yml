@@ -30,7 +30,7 @@ jobs:
           distribution: "adopt"
           java-version: "17.0.10+7"
       - name: キャッシュ を準備中
-        uses: actions/cache@v4.0.0
+        uses: actions/cache@v4
         with:
           path: |
             ~/.gradle
