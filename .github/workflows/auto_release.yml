@@ -23,7 +23,7 @@ jobs:
         distribution: "adopt"
         java-version: "17.0.10+7"
     - name: キャッシュ
-      uses: actions/cache@v3.2.3 # actions/cache@v2
+      uses: actions/cache@v4.0.0 # actions/cache@v2
       with:
         path: |
           ~/.gradle/caches
