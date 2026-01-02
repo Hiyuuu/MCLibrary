@@ -535,7 +535,7 @@ class ConfigUtils(private var plugin: Plugin) : YamlConfiguration(), Listener {
                 if (!isReverse) {
 
                     val getObj = conf.get(section)
-                    if (getObj != null) {
+                    if (getObj != null && f.get(classInstance) != getObj) {
                         val result = runCatching { f.set(classInstance, getObj) }
                         if (result.isFailure)
                             println((section + "の代入失敗。データ型は正常ですか? エラー内容:" + (result.exceptionOrNull()?.message ?: "")))
